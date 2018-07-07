@@ -7,31 +7,34 @@ import WithdrawModalBlocktrades from "./WithdrawModalBlocktrades";
 import BaseModal from "../../Modal/BaseModal";
 import ZfApi from "react-foundation-apps/src/utils/foundation-api";
 import AccountBalance from "../../Account/AccountBalance";
+import BlockTradesDepositAddressCache from "common/BlockTradesDepositAddressCache";
 import AssetName from "components/Utility/AssetName";
 import LinkToAccountById from "components/Utility/LinkToAccountById";
-import {requestDepositAddress, getDepositAddress} from "common/gatewayMethods";
-import {blockTradesAPIs, openledgerAPIs} from "api/apiConfig";
+import {
+    requestDepositAddress,
+    getDepositAddress
+} from "common/blockTradesMethods";
+import {blockTradesAPIs} from "api/apiConfig";
 import LoadingIndicator from "components/LoadingIndicator";
 import counterpart from "counterpart";
-import PropTypes from "prop-types";
 
 class BlockTradesGatewayDepositRequest extends React.Component {
     static propTypes = {
-        url: PropTypes.string,
-        gateway: PropTypes.string,
-        deposit_coin_type: PropTypes.string,
-        deposit_asset_name: PropTypes.string,
-        deposit_account: PropTypes.string,
-        receive_coin_type: PropTypes.string,
+        url: React.PropTypes.string,
+        gateway: React.PropTypes.string,
+        deposit_coin_type: React.PropTypes.string,
+        deposit_asset_name: React.PropTypes.string,
+        deposit_account: React.PropTypes.string,
+        receive_coin_type: React.PropTypes.string,
         account: ChainTypes.ChainAccount,
         issuer_account: ChainTypes.ChainAccount,
-        deposit_asset: PropTypes.string,
-        deposit_wallet_type: PropTypes.string,
+        deposit_asset: React.PropTypes.string,
+        deposit_wallet_type: React.PropTypes.string,
         receive_asset: ChainTypes.ChainAsset,
         deprecated_in_favor_of: ChainTypes.ChainAsset,
-        deprecated_message: PropTypes.string,
-        action: PropTypes.string,
-        supports_output_memos: PropTypes.bool.isRequired
+        deprecated_message: React.PropTypes.string,
+        action: React.PropTypes.string,
+        supports_output_memos: React.PropTypes.bool.isRequired
     };
 
     static defaultProps = {
@@ -43,7 +46,8 @@ class BlockTradesGatewayDepositRequest extends React.Component {
 
         let urls = {
             blocktrades: blockTradesAPIs.BASE,
-            openledger: openledgerAPIs.BASE
+            openledger: blockTradesAPIs.BASE_OL,
+            citadel: blockTradesAPIs.BASE_C
         };
 
         this.state = {
@@ -52,7 +56,6 @@ class BlockTradesGatewayDepositRequest extends React.Component {
             loading: false,
             emptyAddressDeposit: false
         };
-
         this.addDepositAddress = this.addDepositAddress.bind(this);
         this._copy = this._copy.bind(this);
         document.addEventListener("copy", this._copy);
@@ -211,7 +214,7 @@ class BlockTradesGatewayDepositRequest extends React.Component {
         let deposit_memo = null;
         // if (this.props.deprecated_in_favor_of)
         // {
-        //     deposit_address_fragment = <span>please use {this.props.deprecated_in_favor_of.get("symbol")} instead. <span data-tip={this.props.deprecated_message} data-place="right" data-html={true}><Icon name="question-circle" title="icons.question_circle" /></span><ReactTooltip /></span>;
+        //     deposit_address_fragment = <span>please use {this.props.deprecated_in_favor_of.get("symbol")} instead. <span data-tip={this.props.deprecated_message} data-place="right" data-html={true}><Icon name="question-circle" /></span><ReactTooltip /></span>;
         // }
         // else
         // {
@@ -601,4 +604,6 @@ class BlockTradesGatewayDepositRequest extends React.Component {
     }
 }
 
-export default BindToChainState(BlockTradesGatewayDepositRequest);
+export default BindToChainState(BlockTradesGatewayDepositRequest, {
+    keep_updating: true
+});

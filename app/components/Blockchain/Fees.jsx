@@ -47,7 +47,6 @@ class FeeGroup extends React.Component {
         const core_asset = ChainStore.getAsset("1.3.0");
 
         let current_fees = globalObject.parameters.current_fees;
-        let network_fee = globalObject.parameters.network_percent_of_fee / 1e4;
         let scale = current_fees.scale;
         let feesRaw = current_fees.parameters;
         let preferredUnit = settings.get("unit") || core_asset.get("symbol");
@@ -70,10 +69,11 @@ class FeeGroup extends React.Component {
             let operation_name = ops[opId];
             let feename = trxTypes[operation_name];
 
-            let feeRateForLTM = network_fee;
+            let feeRateForLTM = 0.2;
             if (opId === 10) {
+                // Asset creation fee for LTM is 60% of standart user
                 // See https://github.com/bitshares/bitshares-ui/issues/996
-                feeRateForLTM = 0.5 + 0.5 * network_fee;
+                feeRateForLTM = 0.6;
             }
 
             let rows = [];
@@ -207,7 +207,7 @@ class FeeGroup extends React.Component {
         );
     }
 }
-FeeGroup = BindToChainState(FeeGroup);
+FeeGroup = BindToChainState(FeeGroup, {keep_updating: true});
 
 class Fees extends React.Component {
     render() {

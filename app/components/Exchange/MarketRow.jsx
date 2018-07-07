@@ -6,11 +6,14 @@ import utils from "common/utils";
 import Icon from "../Icon/Icon";
 import MarketsActions from "actions/MarketsActions";
 import SettingsActions from "actions/SettingsActions";
-import {withRouter} from "react-router-dom";
 
 class MarketRow extends React.Component {
     static defaultProps = {
         noSymbols: false
+    };
+
+    static contextTypes = {
+        router: React.PropTypes.object.isRequired
     };
 
     constructor() {
@@ -21,23 +24,27 @@ class MarketRow extends React.Component {
 
     _onClick(marketID) {
         const newPath = `/market/${marketID}`;
-        if (newPath !== this.props.location.pathname) {
+        if (newPath !== this.context.router.location.pathname) {
             MarketsActions.switchMarket();
-            this.props.history.push(`/market/${marketID}`);
+            this.context.router.push(`/market/${marketID}`);
         }
     }
 
     componentDidMount() {
+        MarketsActions.getMarketStats(this.props.base, this.props.quote);
         this.statsChecked = new Date();
-        this.statsInterval = MarketsActions.getMarketStatsInterval(
-            35 * 1000,
-            this.props.base,
-            this.props.quote
+        this.statsInterval = setInterval(
+            MarketsActions.getMarketStats.bind(
+                this,
+                this.props.base,
+                this.props.quote
+            ),
+            35 * 1000
         );
     }
 
     componentWillUnmount() {
-        if (this.statsInterval) this.statsInterval();
+        clearInterval(this.statsInterval);
     }
 
     shouldComponentUpdate(nextProps) {
@@ -101,12 +108,9 @@ class MarketRow extends React.Component {
                                     base.get("symbol")
                                 )}
                                 key={column.index}
+                                style={{paddingLeft: 3, paddingRight: 0}}
                             >
-                                <Icon
-                                    className={starClass}
-                                    name="fi-star"
-                                    title="icons.fi_star.symbol"
-                                />
+                                <Icon className={starClass} name="fi-star" />
                             </td>
                         );
 
@@ -115,7 +119,6 @@ class MarketRow extends React.Component {
                         return (
                             <td
                                 onClick={this._onClick.bind(this, marketID)}
-                                className="text-right"
                                 key={column.index}
                             >
                                 {utils.format_volume(amount)}
@@ -137,7 +140,6 @@ class MarketRow extends React.Component {
                         return (
                             <td
                                 onClick={this._onClick.bind(this, marketID)}
-                                className={"text-right " + changeClass}
                                 key={column.index}
                             >
                                 {change + "%"}
@@ -210,7 +212,6 @@ class MarketRow extends React.Component {
                         return (
                             <td
                                 onClick={this._onClick.bind(this, marketID)}
-                                className="text-right"
                                 key={column.index}
                             >
                                 {utils.format_number(
@@ -340,7 +341,6 @@ class MarketRow extends React.Component {
         );
     }
 }
-MarketRow = withRouter(MarketRow);
 
 export default AssetWrapper(MarketRow, {
     propNames: ["quote", "base"],

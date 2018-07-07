@@ -49,7 +49,6 @@ function create(win, opts) {
                 // https://github.com/electron/electron/issues/5860
                 role: can("Cut") ? "cut" : "",
                 enabled: can("Cut"),
-                accelerator: "CmdOrCtrl+X",
                 visible: props.isEditable
             },
             {
@@ -57,7 +56,6 @@ function create(win, opts) {
                 label: "Copy",
                 role: can("Copy") ? "copy" : "",
                 enabled: can("Copy"),
-                accelerator: "CmdOrCtrl+C",
                 visible: props.isEditable || hasText
             },
             {
@@ -65,7 +63,6 @@ function create(win, opts) {
                 label: "Paste",
                 role: editFlags.canPaste ? "paste" : "",
                 enabled: editFlags.canPaste,
-                accelerator: "CmdOrCtrl+V",
                 visible: props.isEditable
             },
             {

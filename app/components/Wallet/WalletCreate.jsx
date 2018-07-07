@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import Translate from "react-translate-component";
 import BrainkeyInput from "components/Wallet/BrainkeyInput";
 import PasswordConfirm from "components/Wallet/PasswordConfirm";
@@ -9,12 +9,10 @@ import WalletActions from "actions/WalletActions";
 import {connect} from "alt-react";
 import cname from "classnames";
 import SettingsActions from "actions/SettingsActions";
-import PropTypes from "prop-types";
-import {getWalletName} from "branding";
 
 class CreateNewWallet extends Component {
     static propTypes = {
-        hideTitle: PropTypes.bool
+        hideTitle: React.PropTypes.bool
     };
 
     constructor(props) {
@@ -41,8 +39,8 @@ class CreateNewWallet extends Component {
     }
 
     onPassword(valid_password) {
-        if (valid_password !== this.state.valid_password)
-            this.setState({valid_password}, this.validate);
+        this.state.valid_password = valid_password;
+        this.setState({valid_password}, this.validate);
     }
 
     onCustomBrainkey() {
@@ -50,6 +48,7 @@ class CreateNewWallet extends Component {
     }
 
     onBrainkey(brnkey) {
+        this.state.brnkey = brnkey;
         this.setState({brnkey}, this.validate);
     }
 
@@ -130,7 +129,7 @@ class CreateNewWallet extends Component {
                     <h4>
                         <Translate content="wallet.wallet_created" />
                     </h4>
-                    <Link to="/">
+                    <Link to="/dashboard">
                         <div className="button success">
                             <Translate content="wallet.done" />
                         </div>
@@ -163,7 +162,6 @@ class CreateNewWallet extends Component {
                             <Translate
                                 component="p"
                                 content="wallet.create_text"
-                                wallet_name={getWalletName()}
                             />
                         ) : null}
                     </div>

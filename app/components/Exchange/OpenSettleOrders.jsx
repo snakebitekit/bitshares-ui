@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+import {PropTypes} from "react";
 import utils from "common/utils";
 import Translate from "react-translate-component";
 import AssetName from "../Utility/AssetName";
@@ -14,7 +14,7 @@ class TableHeader extends React.Component {
         return (
             <thead>
                 <tr>
-                    <th style={{textAlign: "right"}}>
+                    <th>
                         <Translate content="exchange.price" />
                         <br />
                         {baseSymbol ? (
@@ -25,7 +25,7 @@ class TableHeader extends React.Component {
                             </span>
                         ) : null}
                     </th>
-                    <th style={{textAlign: "right"}}>
+                    <th>
                         <Translate content="transfer.amount" />
                         <br />
                         {quoteSymbol ? (
@@ -34,7 +34,7 @@ class TableHeader extends React.Component {
                             </span>
                         ) : null}
                     </th>
-                    <th style={{textAlign: "right"}}>
+                    <th>
                         <Translate content="transaction.settlement_date" />
                         <br />
                         <span

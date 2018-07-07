@@ -7,7 +7,7 @@ import AccountNameInput from "./../Forms/AccountNameInput";
 import PasswordInput from "./../Forms/PasswordInput";
 import WalletDb from "stores/WalletDb";
 import notify from "actions/NotificationActions";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import AccountSelect from "../Forms/AccountSelect";
 import WalletUnlockActions from "actions/WalletUnlockActions";
 import TransactionConfirmStore from "stores/TransactionConfirmStore";
@@ -20,9 +20,6 @@ import ReactTooltip from "react-tooltip";
 import utils from "common/utils";
 import SettingsActions from "actions/SettingsActions";
 import counterpart from "counterpart";
-import {withRouter} from "react-router-dom";
-import {scroller} from "react-scroll";
-import {getWalletName} from "branding";
 
 class CreateAccount extends React.Component {
     constructor() {
@@ -40,8 +37,6 @@ class CreateAccount extends React.Component {
         this.onFinishConfirm = this.onFinishConfirm.bind(this);
 
         this.accountNameInput = null;
-
-        this.scrollToInput = this.scrollToInput.bind(this);
     }
 
     componentWillMount() {
@@ -53,7 +48,6 @@ class CreateAccount extends React.Component {
 
     componentDidMount() {
         ReactTooltip.rebuild();
-        this.scrollToInput();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -96,20 +90,9 @@ class CreateAccount extends React.Component {
                 [this.state.accountName]: true
             }).then(() => {
                 console.log("onFinishConfirm");
-                this.props.history.push(
-                    "/wallet/backup/create?newAccount=true"
-                );
+                this.props.router.push("/wallet/backup/create?newAccount=true");
             });
         }
-    }
-
-    scrollToInput() {
-        scroller.scrollTo(`scrollToInput`, {
-            duration: 1500,
-            delay: 100,
-            smooth: true,
-            containerId: "accountForm"
-        });
     }
 
     createAccount(name) {
@@ -368,10 +351,7 @@ class CreateAccount extends React.Component {
 
                 <p>
                     {!hasWallet ? (
-                        <Translate
-                            content="wallet.has_wallet"
-                            wallet_name={getWalletName()}
-                        />
+                        <Translate content="wallet.has_wallet" />
                     ) : null}
                 </p>
 
@@ -455,7 +435,7 @@ class CreateAccount extends React.Component {
                                 <Translate content="wallet.tips_dashboard" />:
                             </td>
                             <td>
-                                <Link to="/">
+                                <Link to="/dashboard">
                                     <Translate content="header.dashboard" />
                                 </Link>
                             </td>
@@ -546,11 +526,7 @@ class CreateAccount extends React.Component {
         let {step} = this.state;
 
         return (
-            <div
-                className="sub-content"
-                id="scrollToInput"
-                name="scrollToInput"
-            >
+            <div className="sub-content">
                 <div style={{maxWidth: "95vw"}}>
                     {step !== 1 ? (
                         <p
@@ -587,8 +563,6 @@ class CreateAccount extends React.Component {
         );
     }
 }
-
-CreateAccount = withRouter(CreateAccount);
 
 export default connect(
     CreateAccount,

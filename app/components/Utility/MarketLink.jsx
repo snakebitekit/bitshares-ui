@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import ChainTypes from "./ChainTypes";
 import AssetWrapper from "./AssetWrapper";
 import AssetName from "./AssetName";

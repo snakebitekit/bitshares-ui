@@ -4,7 +4,7 @@ import {connect} from "alt-react";
 import ChainTypes from "components/Utility/ChainTypes";
 import BindToChainState from "components/Utility/BindToChainState";
 import AccountStore from "stores/AccountStore";
-import {toPairs} from "lodash-es";
+import {pairs} from "lodash";
 
 class ResolvemyActiveAccountsChainState extends Component {
     static propTypes = {
@@ -13,7 +13,7 @@ class ResolvemyActiveAccountsChainState extends Component {
 
     render() {
         let myActiveAccounts = [];
-        toPairs(this.props.myActiveAccounts).forEach(account => {
+        pairs(this.props.myActiveAccounts).forEach(account => {
             if (!account[1]) return;
             console.log("... account.toJS()", account[1].toJS());
             myActiveAccounts.push(account[1]);

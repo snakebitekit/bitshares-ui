@@ -1,13 +1,12 @@
 import React from "react";
 import HelpContent from "./Utility/HelpContent";
-import {toPairs} from "lodash-es";
+import {pairs} from "lodash";
 
 class Help extends React.Component {
     render() {
-        let path = toPairs(this.props.match.params)
+        let path = pairs(this.props.params)
             .map(p => p[1])
             .join("/");
-
         return (
             <div className="grid-container page-layout help-content-layout">
                 <div className="grid-block page-layout">

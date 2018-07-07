@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import AccountStore from "stores/AccountStore";
 import AccountActions from "actions/AccountActions";
 import {connect} from "alt-react";
@@ -44,6 +44,7 @@ class AccountsSettings extends React.Component {
                         let isIgnored = hiddenAccounts.has(account);
                         let hideLink = (
                             <a
+                                href
                                 onClick={
                                     isIgnored
                                         ? this.onToggleHide.bind(

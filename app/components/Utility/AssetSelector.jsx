@@ -9,12 +9,11 @@ import FormattedAsset from "./FormattedAsset";
 import Immutable from "immutable";
 import classnames from "classnames";
 import AssetWrapper from "./AssetWrapper";
-import PropTypes from "prop-types";
 
 class AssetDropdown extends React.Component {
     static propTypes = {
-        value: PropTypes.string, // asset id
-        onChange: PropTypes.func
+        value: React.PropTypes.string, // asset id
+        onChange: React.PropTypes.func
     };
 
     render() {
@@ -56,15 +55,15 @@ AssetDropdown = AssetWrapper(AssetDropdown, {asList: true});
 
 class AssetSelector extends React.Component {
     static propTypes = {
-        label: PropTypes.string, // a translation key for the label
-        error: PropTypes.string, // the error message override
-        placeholder: PropTypes.string, // the placeholder text to be displayed when there is no user_input
-        onChange: PropTypes.func, // a method to be called any time user input changes
-        onFound: PropTypes.func, // a method to be called when existing account is selected
-        assetInput: PropTypes.string, // the current value of the account selector, the string the user enters
+        label: React.PropTypes.string, // a translation key for the label
+        error: React.PropTypes.string, // the error message override
+        placeholder: React.PropTypes.string, // the placeholder text to be displayed when there is no user_input
+        onChange: React.PropTypes.func, // a method to be called any time user input changes
+        onFound: React.PropTypes.func, // a method to be called when existing account is selected
+        assetInput: React.PropTypes.string, // the current value of the account selector, the string the user enters
         asset: ChainTypes.ChainAsset, // account object retrieved via BindToChainState decorator (not input)
-        tabIndex: PropTypes.number, // tabindex property to be passed to input tag
-        disableActionButton: PropTypes.string // use it if you need to disable action button
+        tabIndex: React.PropTypes.number, // tabindex property to be passed to input tag
+        disableActionButton: React.PropTypes.string // use it if you need to disable action button
     };
 
     static defaultProps = {
@@ -188,12 +187,9 @@ class AssetSelector extends React.Component {
                                 disabled={this.props.disabled}
                                 type="text"
                                 value={this.props.assetInput || ""}
-                                placeholder={
-                                    this.props.placeholder ||
-                                    counterpart.translate(
-                                        "explorer.assets.symbol"
-                                    )
-                                }
+                                placeholder={counterpart.translate(
+                                    "explorer.assets.symbol"
+                                )}
                                 ref="user_input"
                                 onChange={this.onInputChanged.bind(this)}
                                 onKeyDown={this.onKeyDown.bind(this)}

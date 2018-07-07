@@ -63,8 +63,7 @@ class WalletUnlockStore {
     }
 
     onCancel() {
-        if (typeof this.state.reject === "function")
-            this.state.reject({isCanceled: true});
+        this.state.reject({isCanceled: true});
         this.setState({resolve: null, reject: null});
     }
 

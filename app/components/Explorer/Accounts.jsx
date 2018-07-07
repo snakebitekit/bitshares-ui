@@ -1,10 +1,10 @@
 import React from "react";
-import PropTypes from "prop-types";
-import {Link} from "react-router-dom";
+import {PropTypes} from "react";
+import {Link} from "react-router/es";
 import Immutable from "immutable";
 import Translate from "react-translate-component";
 import AccountActions from "actions/AccountActions";
-import {debounce} from "lodash-es";
+import {debounce} from "lodash";
 import ChainTypes from "../Utility/ChainTypes";
 import Icon from "../Icon/Icon";
 import BindToChainState from "../Utility/BindToChainState";
@@ -43,7 +43,6 @@ class AccountRow extends React.Component {
     render() {
         let {account, contacts} = this.props;
 
-        if (!account) return null;
         let balance = account.getIn(["balances", "1.3.0"]) || null;
         let accountName = account.get("name");
 
@@ -52,17 +51,11 @@ class AccountRow extends React.Component {
                 <td>{account.get("id")}</td>
                 {contacts.has(accountName) ? (
                     <td onClick={this._onRemoveContact.bind(this, accountName)}>
-                        <Icon
-                            name="minus-circle"
-                            title="icons.minus_circle.remove_contact"
-                        />
+                        <Icon name="minus-circle" />
                     </td>
                 ) : (
                     <td onClick={this._onAddContact.bind(this, accountName)}>
-                        <Icon
-                            name="plus-circle"
-                            title="icons.plus_circle.add_contact"
-                        />
+                        <Icon name="plus-circle" />
                     </td>
                 )}
                 <td>
@@ -150,15 +143,6 @@ class Accounts extends React.Component {
         if (searchAccounts.size > 0 && searchTerm && searchTerm.length > 0) {
             accountRows = searchAccounts
                 .filter(a => {
-                    /*
-                    * This appears to return false negatives, perhaps from
-                    * changed account name rules when moving to graphene?. Either
-                    * way, trying to resolve invalid names fails in the ChainStore,
-                    * which in turn breaks the BindToChainState wrapper
-                    */
-                    // if (!ChainValidation.is_account_name(a, true)) {
-                    //     return false;
-                    // }
                     return a.indexOf(searchTerm) !== -1;
                 })
                 .sort((a, b) => {
@@ -201,10 +185,7 @@ class Accounts extends React.Component {
                                         />
                                     </th>
                                     <th>
-                                        <Icon
-                                            name="user"
-                                            title="icons.user.account"
-                                        />
+                                        <Icon name="user" />
                                     </th>
                                     <th>
                                         <Translate

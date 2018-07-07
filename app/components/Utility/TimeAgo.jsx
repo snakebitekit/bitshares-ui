@@ -1,14 +1,13 @@
 import React from "react";
 import {FormattedRelative} from "react-intl";
 import {ChainStore} from "bitsharesjs/es";
-import PropTypes from "prop-types";
 
 class TimeAgo extends React.Component {
     static propTypes = {
-        time: PropTypes.any.isRequired,
-        chain_time: PropTypes.bool,
-        component: PropTypes.element,
-        className: PropTypes.string
+        time: React.PropTypes.any.isRequired,
+        chain_time: React.PropTypes.bool,
+        component: React.PropTypes.element,
+        className: React.PropTypes.string
     };
 
     static defaultProps = {

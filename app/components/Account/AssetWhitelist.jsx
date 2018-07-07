@@ -73,7 +73,6 @@ class AssetWhitelist extends React.Component {
                                     >
                                         <Icon
                                             name="cross-circle"
-                                            title="icons.cross_circle.remove"
                                             className="icon-14px"
                                         />
                                     </td>
@@ -156,7 +155,6 @@ class AssetWhitelist extends React.Component {
                                     >
                                         <Icon
                                             name="cross-circle"
-                                            title="icons.cross_circle.remove"
                                             className="icon-14px"
                                         />
                                     </td>

@@ -139,7 +139,6 @@ div.transfer-input {
             right: 0;
             bottom: 0;
             font-size: 1.3rem;
-            border-radius: 5px;
         }
     }
 
@@ -185,13 +184,12 @@ div.transfer-input {
     }
 
     &.active {
-        border-radius: 5px 5px 0 0;
         box-shadow: none;
         border-bottom: none;
     }
 
     &.active .dropdown {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid $border-color;
         max-height: 400px;
     }
 
@@ -206,8 +204,9 @@ div.transfer-input {
 
         /* Styles */
         background: #fff;
-        border-radius: 0 0 5px 5px;
-        border: 1px solid rgba(0, 0, 0, 0.2);
+        border: 1px solid $border-color;
+        font-size: 0.9rem;
+        text-transform: uppercase;
         border-top: none;
         border-bottom: none;
         list-style: none;
@@ -355,25 +354,8 @@ button.disabled {
 }
 
 .button.hollow {
-    background-color: transparent;
-    @include RobotoCondensed;
-
     &:hover {
-        color: #fff;
-    }
-}
-
-a.button span {
-    color: #fff;
-}
-
-.button.hollow.primary {
-    border-color: $bs-blue;
-    color: $bs-blue !important;
-    background: transparent;
-
-    &:hover {
-        color: #fff !important;
+        border: 1px solid #012ec5;
     }
 }
 

@@ -8,7 +8,6 @@ import SettingsActions from "actions/SettingsActions";
 import {Apis} from "bitsharesjs-ws";
 import counterpart from "counterpart";
 
-const optionalApis = {enableCrypto: true, enableOrders: true};
 class InitError extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (
@@ -28,7 +27,7 @@ class InitError extends React.Component {
             setting: "apiServer",
             value: e.target.value
         });
-        Apis.reset(e.target.value, true, 4000, optionalApis);
+        Apis.reset(e.target.value, true);
     }
 
     onReloadClick(e) {
@@ -50,17 +49,7 @@ class InitError extends React.Component {
     }
 
     render() {
-        let uniqueNodes = this.props.apis.reduce((a, node) => {
-            let exists =
-                a.findIndex(n => {
-                    return n.url === node.url;
-                }) !== -1;
-
-            if (!exists) a.push(node);
-            return a;
-        }, []);
-
-        let options = uniqueNodes.map(entry => {
+        let options = this.props.apis.map(entry => {
             let onlyDescription =
                 entry.url.indexOf("fake.automatic-selection") !== -1;
             let {location} = entry;
@@ -84,7 +73,10 @@ class InitError extends React.Component {
                 <div className="grid-container">
                     <div className="grid-content no-overflow">
                         <br />
-                        <Translate component="h3" content={`app_init.title`} />
+                        <Translate
+                            component="h3"
+                            content={`init_error.title`}
+                        />
                         <br />
                         <section className="block-list">
                             <header>
@@ -122,20 +114,20 @@ class InitError extends React.Component {
                                 </li>
                                 <li className="key-value clearfix">
                                     <div className="float-left">
-                                        <Translate content="app_init.ws_status" />
+                                        <Translate content="init_error.ws_status" />
                                     </div>
                                     <div className="float-right">
                                         {this.props.rpc_connection_status ===
                                         "open" ? (
                                             <span className="txtlabel success">
                                                 <Translate
-                                                    content={`app_init.connected`}
+                                                    content={`init_error.connected`}
                                                 />
                                             </span>
                                         ) : (
                                             <span className="txtlabel warning">
                                                 <Translate
-                                                    content={`app_init.not_connected`}
+                                                    content={`init_error.not_connected`}
                                                 />
                                             </span>
                                         )}
@@ -147,9 +139,10 @@ class InitError extends React.Component {
                         <div className="button-group">
                             <div
                                 className="button outline"
+                                href
                                 onClick={this.onReloadClick}
                             >
-                                <Translate content={`app_init.retry`} />
+                                <Translate content={`init_error.retry`} />
                             </div>
 
                             <div

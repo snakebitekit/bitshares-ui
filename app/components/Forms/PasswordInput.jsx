@@ -1,6 +1,5 @@
 import React from "react";
-import {Component} from "react";
-import PropTypes from "prop-types";
+import {PropTypes, Component} from "react";
 import cname from "classnames";
 import Translate from "react-translate-component";
 import zxcvbnAsync from "zxcvbn-async";
@@ -166,11 +165,7 @@ class PasswordInput extends Component {
                 <div className={password_class_name}>
                     {/* {noLabel ? null : <Translate component="label" content="wallet.password" />} */}
                     <section>
-                        <label
-                            className={
-                                "left-label " + (this.props.labelClass || "")
-                            }
-                        >
+                        <label className="left-label">
                             <Translate content="wallet.enter_password" />
                         </label>
                         <input
@@ -179,11 +174,10 @@ class PasswordInput extends Component {
                                     ? 0
                                     : null
                             }}
-                            id="current-password"
                             name="password"
                             type="password"
                             ref="password"
-                            autoComplete="current-password"
+                            autoComplete="off"
                             onChange={this.handleChange}
                             onKeyDown={this.onKeyDown}
                         />
@@ -216,11 +210,10 @@ class PasswordInput extends Component {
                             style={{position: "relative", maxWidth: "30rem"}}
                         >
                             <input
-                                id="confirm_password"
                                 name="confirm_password"
                                 type="password"
                                 ref="confirm_password"
-                                autoComplete="confirm-password"
+                                autoComplete="off"
                                 onChange={this.handleChange}
                             />
                             {confirmMatch ? (

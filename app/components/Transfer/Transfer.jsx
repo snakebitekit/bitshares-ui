@@ -18,16 +18,15 @@ import {
     checkBalance,
     shouldPayFeeWithAssetAsync
 } from "common/trxHelper";
-import {debounce, isNaN} from "lodash-es";
+import {debounce, isNaN} from "lodash";
 import classnames from "classnames";
 import {Asset} from "common/MarketClasses";
-import queryString from "query-string";
 
 class Transfer extends React.Component {
     constructor(props) {
         super(props);
         let state = Transfer.getInitialState();
-        let query = queryString.parse(props.location.search) || {};
+        let {query} = this.props.location;
 
         if (query.from) {
             state.from_name = query.from;

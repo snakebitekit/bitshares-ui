@@ -10,22 +10,21 @@ import AccountBalance from "../../Account/AccountBalance";
 import BalanceComponent from "components/Utility/BalanceComponent";
 import DepositFiatOpenLedger from "./DepositFiatOpenLedger";
 import WithdrawFiatOpenLedger from "./WithdrawFiatOpenLedger";
-import PropTypes from "prop-types";
 
 class OpenLedgerFiatDepositWithdrawCurrency extends React.Component {
     static propTypes = {
-        url: PropTypes.string,
-        gateway: PropTypes.string,
-        deposit_coin_type: PropTypes.string,
-        deposit_asset_name: PropTypes.string,
-        deposit_account: PropTypes.string,
-        receive_coin_type: PropTypes.string,
+        url: React.PropTypes.string,
+        gateway: React.PropTypes.string,
+        deposit_coin_type: React.PropTypes.string,
+        deposit_asset_name: React.PropTypes.string,
+        deposit_account: React.PropTypes.string,
+        receive_coin_type: React.PropTypes.string,
         account: ChainTypes.ChainAccount,
         issuer_account: ChainTypes.ChainAccount,
-        deposit_asset: PropTypes.string,
+        deposit_asset: React.PropTypes.string,
         receive_asset: ChainTypes.ChainAsset,
-        deposit_allowed: PropTypes.bool,
-        withdraw_allowed: PropTypes.bool
+        deposit_allowed: React.PropTypes.bool,
+        withdraw_allowed: React.PropTypes.bool
     };
 
     constructor(props) {
@@ -210,12 +209,13 @@ class OpenLedgerFiatDepositWithdrawCurrency extends React.Component {
     }
 } // OpenLedgerFiatDepositWithdrawCurrency
 OpenLedgerFiatDepositWithdrawCurrency = BindToChainState(
-    OpenLedgerFiatDepositWithdrawCurrency
+    OpenLedgerFiatDepositWithdrawCurrency,
+    {keep_updating: true}
 );
 
 class OpenLedgerFiatDepositWithdrawal extends React.Component {
     static propTypes = {
-        rpc_url: PropTypes.string,
+        rpc_url: React.PropTypes.string,
         account: ChainTypes.ChainAccount,
         issuer_account: ChainTypes.ChainAccount
     };
@@ -311,7 +311,8 @@ class OpenLedgerFiatDepositWithdrawal extends React.Component {
     }
 } // OpenLedgerFiatDepositWithdrawal
 OpenLedgerFiatDepositWithdrawal = BindToChainState(
-    OpenLedgerFiatDepositWithdrawal
+    OpenLedgerFiatDepositWithdrawal,
+    {keep_updating: true}
 );
 
 export default OpenLedgerFiatDepositWithdrawal;

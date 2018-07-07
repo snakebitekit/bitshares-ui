@@ -58,6 +58,7 @@ class AccountTreemap extends React.Component {
                     amount,
                     preferredAsset,
                     asset,
+                    true,
                     marketStats,
                     core_asset
                 );
@@ -85,6 +86,7 @@ class AccountTreemap extends React.Component {
                         amount,
                         preferredAsset,
                         asset,
+                        true,
                         marketStats,
                         core_asset
                     );

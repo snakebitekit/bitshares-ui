@@ -8,15 +8,14 @@ import BalanceComponent from "components/Utility/BalanceComponent";
 import counterpart from "counterpart";
 import AmountSelector from "components/Utility/AmountSelector";
 import AccountActions from "actions/AccountActions";
-import PropTypes from "prop-types";
 
 class WithdrawFiatOpenLedger extends React.Component {
     static propTypes = {
         account: ChainTypes.ChainAccount.isRequired,
         issuer_account: ChainTypes.ChainAccount.isRequired,
-        deposit_asset: PropTypes.string,
+        deposit_asset: React.PropTypes.string,
         receive_asset: ChainTypes.ChainAsset.isRequired,
-        rpc_url: PropTypes.string
+        rpc_url: React.PropTypes.string
     };
 
     constructor(props) {
@@ -142,4 +141,4 @@ class WithdrawFiatOpenLedger extends React.Component {
     }
 }
 
-export default BindToChainState(WithdrawFiatOpenLedger);
+export default BindToChainState(WithdrawFiatOpenLedger, {keep_updating: true});

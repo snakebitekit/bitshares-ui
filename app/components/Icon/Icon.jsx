@@ -1,22 +1,78 @@
 // look for more icons here https://linearicons.com/free or here http://hawcons.com/preview/
 
 import React from "react";
-import counterpart from "counterpart";
-import PropTypes from "prop-types";
-import iconsMap from "../../assets/icons/icons-loader.js";
+
+let icons = [
+    "user",
+    "trash",
+    "chevron-down",
+    "menu",
+    "database",
+    "download",
+    "search",
+    "plus-circle",
+    "question-circle",
+    "cross-circle",
+    "cog",
+    "layers",
+    "users",
+    "wand",
+    "b-logo",
+    "accounts",
+    "witnesses",
+    "assets",
+    "proposals",
+    "blocks",
+    "committee_members",
+    "workers",
+    "key",
+    "checkmark-circle",
+    "checkmark",
+    "piggy",
+    "locked",
+    "unlocked",
+    "markets",
+    "fi-star",
+    "fees",
+    "thumb-tack",
+    "thumb-untack",
+    "clock",
+    "clippy",
+    "shuffle",
+    "transfer",
+    "dollar",
+    "dollar-green",
+    "deposit",
+    "withdraw",
+    "settle",
+    "trade",
+    "adjust",
+    "excel",
+    "share",
+    "minus-circle",
+    "cogs",
+    "dashboard",
+    "server",
+    "power",
+    "thumbs-up",
+    "folder",
+    "warning",
+    "gift",
+    "text",
+    "list",
+    "hourglass",
+    "news",
+    "hamburger",
+    "hamburger-x",
+    "link"
+];
+
+let icons_map = {};
+for (let i of icons) icons_map[i] = require(`./${i}.svg`);
 
 require("./icon.scss");
 
 class Icon extends React.Component {
-    shouldComponentUpdate(np) {
-        return (
-            np.className !== this.props.className ||
-            np.name !== this.props.name ||
-            np.title !== this.props.title ||
-            np.size !== this.props.size
-        );
-    }
-
     render() {
         let classes = "icon " + this.props.name;
         if (this.props.size) {
@@ -25,47 +81,22 @@ class Icon extends React.Component {
         if (this.props.className) {
             classes += " " + this.props.className;
         }
-        if (this.props.title != null) {
-            let title = this.props.title;
-            if (typeof title === "string" && title.indexOf(".") > 0) {
-                title = counterpart.translate(title);
-            }
-            return (
-                <span
-                    title={title}
-                    className={classes}
-                    style={this.props.style || {}}
-                    dangerouslySetInnerHTML={{
-                        __html: iconsMap[this.props.name]
-                    }}
-                    onClick={this.props.onClick}
-                />
-            );
-        } else {
-            return (
-                <span
-                    className={classes}
-                    style={this.props.style || {}}
-                    dangerouslySetInnerHTML={{
-                        __html: iconsMap[this.props.name]
-                    }}
-                    onClick={this.props.onClick}
-                />
-            );
-        }
+        return (
+            <span
+                className={classes}
+                style={this.props.style || {}}
+                dangerouslySetInnerHTML={{__html: icons_map[this.props.name]}}
+                onClick={this.props.onClick}
+            />
+        );
     }
 }
 
 Icon.propTypes = {
-    name: PropTypes.string.isRequired,
-    title: PropTypes.string,
-    size: PropTypes.oneOf(["1x", "1_5x", "2x", "3x", "4x", "5x", "10x"]),
-    inverse: PropTypes.bool,
-    className: PropTypes.string
-};
-
-Icon.defaultProps = {
-    title: null
+    name: React.PropTypes.string.isRequired,
+    size: React.PropTypes.oneOf(["1x", "1_5x", "2x", "3x", "4x", "5x", "10x"]),
+    inverse: React.PropTypes.bool,
+    className: React.PropTypes.string
 };
 
 export default Icon;

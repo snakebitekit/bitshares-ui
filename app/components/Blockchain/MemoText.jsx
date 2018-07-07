@@ -44,8 +44,8 @@ class MemoText extends React.Component {
                     <span>
                         {counterpart.translate("transfer.memo_unlock")}{" "}
                     </span>
-                    <a onClick={this._toggleLock.bind(this)}>
-                        <Icon name="locked" title="icons.locked.action" />
+                    <a href onClick={this._toggleLock.bind(this)}>
+                        <Icon name="locked" />
                     </a>
                 </div>
             );

@@ -11,21 +11,20 @@ import utils from "common/utils";
 import AccountActions from "actions/AccountActions";
 import TransactionConfirmStore from "stores/TransactionConfirmStore";
 import {blockTradesAPIs} from "api/apiConfig";
-import {debounce} from "lodash-es";
+import {debounce} from "lodash";
 import {checkFeeStatusAsync, checkBalance} from "common/trxHelper";
 import {Asset} from "common/MarketClasses";
 import {ChainStore} from "bitsharesjs/es";
-import {getConversionJson} from "common/gatewayMethods";
-import PropTypes from "prop-types";
+import {getConversionJson} from "common/blockTradesMethods";
 
 class ButtonConversion extends React.Component {
     static propTypes = {
         balance: ChainTypes.ChainObject,
-        input_coin_type: PropTypes.string.isRequired,
-        output_coin_type: PropTypes.string.isRequired,
-        account_name: PropTypes.string.isRequired,
-        account_id: PropTypes.string.isRequired,
-        url: PropTypes.string.isRequired
+        input_coin_type: React.PropTypes.string.isRequired,
+        output_coin_type: React.PropTypes.string.isRequired,
+        account_name: React.PropTypes.string.isRequired,
+        account_id: React.PropTypes.string.isRequired,
+        url: React.PropTypes.string.isRequired
     };
 
     constructor(props) {
@@ -273,11 +272,11 @@ ButtonConversion = BindToChainState(ButtonConversion);
 class ButtonConversionContainer extends React.Component {
     static propTypes = {
         asset: ChainTypes.ChainAsset.isRequired,
-        input_coin_type: PropTypes.string.isRequired,
-        output_coin_type: PropTypes.string.isRequired,
-        account_name: PropTypes.string.isRequired,
-        account_id: PropTypes.string.isRequired,
-        url: PropTypes.string.isRequired
+        input_coin_type: React.PropTypes.string.isRequired,
+        output_coin_type: React.PropTypes.string.isRequired,
+        account_name: React.PropTypes.string.isRequired,
+        account_id: React.PropTypes.string.isRequired,
+        url: React.PropTypes.string.isRequired
     };
 
     render() {
@@ -315,7 +314,7 @@ ButtonConversionContainer = BindToChainState(ButtonConversionContainer);
 class ButtonWithdraw extends React.Component {
     static propTypes = {
         balance: ChainTypes.ChainObject,
-        url: PropTypes.string.isRequired
+        url: React.PropTypes.string.isRequired
     };
 
     getWithdrawModalId() {
@@ -397,8 +396,8 @@ class ButtonWithdrawContainer extends React.Component {
     static propTypes = {
         account: ChainTypes.ChainAccount.isRequired,
         asset: ChainTypes.ChainAsset.isRequired,
-        output_coin_type: PropTypes.string.isRequired,
-        url: PropTypes.string.isRequired
+        output_coin_type: React.PropTypes.string.isRequired,
+        url: React.PropTypes.string.isRequired
     };
 
     render() {
@@ -432,19 +431,19 @@ ButtonWithdrawContainer = BindToChainState(ButtonWithdrawContainer);
 
 class BlockTradesBridgeDepositRequest extends React.Component {
     static propTypes = {
-        url: PropTypes.string,
-        gateway: PropTypes.string,
+        url: React.PropTypes.string,
+        gateway: React.PropTypes.string,
         account: ChainTypes.ChainAccount,
         issuer_account: ChainTypes.ChainAccount,
-        initial_deposit_input_coin_type: PropTypes.string,
-        initial_deposit_output_coin_type: PropTypes.string,
-        initial_deposit_estimated_input_amount: PropTypes.string,
-        initial_withdraw_input_coin_type: PropTypes.string,
-        initial_withdraw_output_coin_type: PropTypes.string,
-        initial_withdraw_estimated_input_amount: PropTypes.string,
-        initial_conversion_input_coin_type: PropTypes.string,
-        initial_conversion_output_coin_type: PropTypes.string,
-        initial_conversion_estimated_input_amount: PropTypes.string
+        initial_deposit_input_coin_type: React.PropTypes.string,
+        initial_deposit_output_coin_type: React.PropTypes.string,
+        initial_deposit_estimated_input_amount: React.PropTypes.string,
+        initial_withdraw_input_coin_type: React.PropTypes.string,
+        initial_withdraw_output_coin_type: React.PropTypes.string,
+        initial_withdraw_estimated_input_amount: React.PropTypes.string,
+        initial_conversion_input_coin_type: React.PropTypes.string,
+        initial_conversion_output_coin_type: React.PropTypes.string,
+        initial_conversion_estimated_input_amount: React.PropTypes.string
     };
 
     constructor(props) {
@@ -2515,4 +2514,6 @@ class BlockTradesBridgeDepositRequest extends React.Component {
     }
 } // BlockTradesBridgeDepositRequest
 
-export default BindToChainState(BlockTradesBridgeDepositRequest);
+export default BindToChainState(BlockTradesBridgeDepositRequest, {
+    keep_updating: true
+});

@@ -25,8 +25,8 @@ let stubRouterContext = (Component, props, stubs) => {
 
     return React.createClass({
         childContextTypes: {
-            router: PropTypes.func,
-            routeDepth: PropTypes.number
+            router: React.PropTypes.func,
+            routeDepth: React.PropTypes.number
         },
 
         getChildContext() {

@@ -619,13 +619,13 @@ describe("FeedPrice", function() {
 
         assert.equal(
             price.getSqueezePrice({real: true}),
-            263.61805556,
-            "Squeeze price should equal 263.61805556"
+            263.61666667,
+            "Squeeze price should equal 263.61666667"
         );
         assert.equal(
             price2.getSqueezePrice({real: true}),
-            0.00379337,
-            "Squeeze price should equal 0.00379337"
+            0.00379339,
+            "Squeeze price should equal 0.00379339"
         );
     });
 
@@ -1082,23 +1082,23 @@ describe("CallOrder", function() {
         );
     });
 
-    it("Returns the amount for sale as an asset based on squeeze price", function() {
+    it("Returns the amount for sale as an asset", function() {
         let order = new CallOrder(o, assets, "1.3.0", settlePrice_0);
         let forSale = order.amountForSale();
 
         assert.equal(
             forSale.getAmount(),
-            188045485419,
-            "Satoshi amount for sale should equal 188045485419"
+            188039049032,
+            "Satoshi amount for sale should equal 188039049032"
         );
         assert.equal(
             forSale.getAmount({real: true}),
-            1880454.85419,
-            "Real amount for sale should equal 1880454.85419"
+            1880390.49032,
+            "Real amount for sale should equal 1880390.49032"
         );
     });
 
-    it("Returns the amount to receive as an asset", function() {
+    it("Returns the amount to receive as an asset based on squeeze price", function() {
         let order = new CallOrder(o, assets, "1.3.0", settlePrice_0);
         let toReceive = order.amountToReceive();
 
@@ -1121,8 +1121,8 @@ describe("CallOrder", function() {
 
         assert.equal(
             o3.amountForSale().getAmount(),
-            188045485419 * 2,
-            "The amount should equal 376090970838"
+            188039049032 * 2,
+            "The amount should equal 376078098064"
         );
     });
 

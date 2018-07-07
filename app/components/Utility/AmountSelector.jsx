@@ -6,13 +6,12 @@ import Immutable from "immutable";
 import counterpart from "counterpart";
 import AssetWrapper from "./AssetWrapper";
 import utils from "common/utils";
-import PropTypes from "prop-types";
 
 class AssetSelector extends React.Component {
     static propTypes = {
-        value: PropTypes.string, // asset id
-        onChange: PropTypes.func,
-        scroll_length: PropTypes.number
+        value: React.PropTypes.string, // asset id
+        onChange: React.PropTypes.func,
+        scroll_length: React.PropTypes.number
     };
 
     shouldComponentUpdate(np) {
@@ -56,19 +55,18 @@ AssetSelector = AssetWrapper(AssetSelector, {asList: true});
 
 class AmountSelector extends React.Component {
     static propTypes = {
-        label: PropTypes.string, // a translation key for the label
-        assets: PropTypes.array,
-        amount: PropTypes.any,
-        placeholder: PropTypes.string,
-        onChange: PropTypes.func,
-        tabIndex: PropTypes.number,
-        error: PropTypes.string,
-        scroll_length: PropTypes.number
+        label: React.PropTypes.string, // a translation key for the label
+        assets: React.PropTypes.array,
+        amount: React.PropTypes.any,
+        placeholder: React.PropTypes.string,
+        onChange: React.PropTypes.func,
+        tabIndex: React.PropTypes.number,
+        error: React.PropTypes.string,
+        scroll_length: React.PropTypes.number
     };
 
     static defaultProps = {
-        disabled: false,
-        tabIndex: 0
+        disabled: false
     };
 
     componentDidMount() {
@@ -103,7 +101,6 @@ class AmountSelector extends React.Component {
         let value = this.props.error
             ? counterpart.translate(this.props.error)
             : this.formatAmount(this.props.amount);
-
         return (
             <div className="amount-selector" style={this.props.style}>
                 <label className="right-label">

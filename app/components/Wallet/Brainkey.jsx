@@ -7,7 +7,7 @@ import BrainkeyStoreFactory from "stores/BrainkeyStore";
 import BindToChainState from "components/Utility/BindToChainState";
 import ChainTypes from "components/Utility/ChainTypes";
 import BrainkeyInput from "components/Wallet/BrainkeyInput";
-import {toPairs} from "lodash-es";
+import {pairs} from "lodash";
 import Translate from "react-translate-component";
 import AccountCard from "components/Dashboard/AccountCard";
 
@@ -73,13 +73,13 @@ ViewBrainkey = connect(
     connectObject
 );
 
-class BrainkeyAccounts extends React.Component {
+class BrainkeyAccounts {
     static propTypes = {
         accounts: ChainTypes.ChainAccountsList.isRequired
     };
 
     render() {
-        let rows = toPairs(this.props.accounts)
+        let rows = pairs(this.props.accounts)
             .filter(account => !!account[1])
             .map(account => account[1].get("name"))
             .sort()
@@ -87,7 +87,7 @@ class BrainkeyAccounts extends React.Component {
         return <span>{rows}</span>;
     }
 }
-BrainkeyAccounts = BindToChainState(BrainkeyAccounts);
+BrainkeyAccounts = BindToChainState(BrainkeyAccounts, {keep_updating: true});
 
 export class BrainkeyInputAccept extends Component {
     constructor() {

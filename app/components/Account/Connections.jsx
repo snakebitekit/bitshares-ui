@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import Translate from "react-translate-component";
 
 class Connections extends React.Component {
@@ -11,7 +11,9 @@ class Connections extends React.Component {
                       return (
                           <li key={account}>
                               X:{" "}
-                              <Link to={`/account/${account}`}>{account}</Link>
+                              <Link to={`/account/${account}/overview/`}>
+                                  {account}
+                              </Link>
                           </li>
                       );
                   }
@@ -24,7 +26,9 @@ class Connections extends React.Component {
                       return (
                           <li key={account}>
                               X:{" "}
-                              <Link to={`/account/${account}`}>{account}</Link>
+                              <Link to={`/account/${account}/overview/`}>
+                                  {account}
+                              </Link>
                           </li>
                       );
                   }

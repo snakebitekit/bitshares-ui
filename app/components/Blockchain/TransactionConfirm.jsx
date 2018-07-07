@@ -82,7 +82,6 @@ class TransactionConfirm extends React.Component {
                             &nbsp;&nbsp;<span>
                                 <Icon
                                     name="checkmark-circle"
-                                    title="icons.checkmark_circle.operation_succeed"
                                     size="1x"
                                     className="success"
                                 />
@@ -141,7 +140,6 @@ class TransactionConfirm extends React.Component {
                     <div className="float-left">
                         <Icon
                             name="checkmark-circle"
-                            title="icons.checkmark_circle.operation_succeed"
                             size="4x"
                             className="success"
                         />
@@ -297,7 +295,7 @@ class TransactionConfirm extends React.Component {
 
                             {/* P R O P O S E   T O G G L E */}
                             {!this.props.transaction.has_proposed_operation() &&
-                            !(broadcast || broadcasting || this.props.error) ? (
+                            !(broadcast || broadcasting) ? (
                                 <div className="align-right grid-block">
                                     <label
                                         style={{

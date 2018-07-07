@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+import {PropTypes} from "react";
 import classNames from "classnames";
 import utils from "common/utils";
 import Translate from "react-translate-component";
@@ -129,24 +129,20 @@ class BuySell extends React.Component {
             asset_id: quote.get("asset_id"),
             precision: quote.get("precision")
         });
-        const baseMarketFeePercent =
-            base.getIn(["options", "market_fee_percent"]) / 100 + "%";
-        const quoteMarketFeePercent =
-            quote.getIn(["options", "market_fee_percent"]) / 100 + "%";
         const quoteFee = !amount
             ? 0
             : Math.min(
                   maxQuoteMarketFee.getAmount({real: true}),
                   (amount * quote.getIn(["options", "market_fee_percent"])) /
                       10000
-              ).toFixed(maxQuoteMarketFee.precision);
+              );
         const baseFee = !amount
             ? 0
             : Math.min(
                   maxBaseMarketFee.getAmount({real: true}),
                   (total * base.getIn(["options", "market_fee_percent"])) /
                       10000
-              ).toFixed(maxBaseMarketFee.precision);
+              );
         const baseFlagBooleans = assetUtils.getFlagBooleans(
             base.getIn(["options", "flags"]),
             base.has("bitasset_data_id")
@@ -156,20 +152,15 @@ class BuySell extends React.Component {
             quote.has("bitasset_data_id")
         );
 
-        const {name: baseName, prefix: basePrefix} = utils.replaceName(
-            this.props.base
-        );
         const hasMarketFee =
             baseFlagBooleans["charge_market_fee"] ||
             quoteFlagBooleans["charge_market_fee"];
         var baseMarketFee = baseFlagBooleans["charge_market_fee"] ? (
             <div className="grid-block no-padding buy-sell-row">
-                <div className="grid-block small-4 no-margin no-overflow buy-sell-label">
-                    <Translate content="explorer.asset.summary.market_fee" />:&nbsp;{
-                        baseMarketFeePercent
-                    }
+                <div className="grid-block small-3 no-margin no-overflow buy-sell-label">
+                    <Translate content="explorer.asset.summary.market_fee" />:
                 </div>
-                <div className="grid-block small-4 no-margin no-overflow buy-sell-input">
+                <div className="grid-block small-5 no-margin no-overflow buy-sell-input">
                     <input
                         disabled
                         type="text"
@@ -185,14 +176,13 @@ class BuySell extends React.Component {
                             percent:
                                 base.getIn(["options", "market_fee_percent"]) /
                                 100,
-                            asset: (basePrefix || "") + baseName
+                            asset: base.get("symbol")
                         })}
                         className="inline-block tooltip"
                     >
                         &nbsp;<Icon
                             style={{position: "relative", top: 3}}
                             name="question-circle"
-                            title="icons.question_circle"
                         />
                     </span>
                 </div>
@@ -207,18 +197,12 @@ class BuySell extends React.Component {
                 </div>
             </div>
         ) : null;
-
-        const {name: quoteName, prefix: quotePrefix} = utils.replaceName(
-            this.props.quote
-        );
         var quoteMarketFee = quoteFlagBooleans["charge_market_fee"] ? (
             <div className="grid-block no-padding buy-sell-row">
-                <div className="grid-block small-4 no-margin no-overflow buy-sell-label">
-                    <Translate content="explorer.asset.summary.market_fee" />:&nbsp;{
-                        quoteMarketFeePercent
-                    }
+                <div className="grid-block small-3 no-margin no-overflow buy-sell-label">
+                    <Translate content="explorer.asset.summary.market_fee" />:
                 </div>
-                <div className="grid-block small-4 no-margin no-overflow buy-sell-input">
+                <div className="grid-block small-5 no-margin no-overflow buy-sell-input">
                     <input
                         disabled
                         type="text"
@@ -234,14 +218,13 @@ class BuySell extends React.Component {
                             percent:
                                 quote.getIn(["options", "market_fee_percent"]) /
                                 100,
-                            asset: (quotePrefix || "") + quoteName
+                            asset: quote.get("symbol")
                         })}
                         className="inline-block tooltip"
                     >
                         &nbsp;<Icon
                             style={{position: "relative", top: 3}}
                             name="question-circle"
-                            title="icons.question-circle"
                         />
                     </span>
                 </div>
@@ -537,7 +520,7 @@ class BuySell extends React.Component {
                                         dataPlace="right"
                                         name={base.get("symbol")}
                                     />
-                                    &nbsp;/&nbsp;
+                                    /
                                     <AssetName
                                         dataPlace="right"
                                         name={quote.get("symbol")}
@@ -652,8 +635,7 @@ class BuySell extends React.Component {
                                             </td>
                                             <td
                                                 style={{
-                                                    paddingLeft: 5,
-                                                    textAlign: "right"
+                                                    paddingLeft: 5
                                                 }}
                                             >
                                                 <span
@@ -681,7 +663,7 @@ class BuySell extends React.Component {
                                         </tr>
 
                                         <tr className="buy-sell-info">
-                                            <td style={{paddingTop: 5}}>
+                                            <td style={{paddingTop: 10}}>
                                                 {isBid ? (
                                                     <Translate content="exchange.lowest_ask" />
                                                 ) : (
@@ -692,8 +674,7 @@ class BuySell extends React.Component {
                                                 <td
                                                     style={{
                                                         paddingLeft: 5,
-                                                        textAlign: "right",
-                                                        paddingTop: 5,
+                                                        paddingTop: 10,
                                                         verticalAlign: "bottom"
                                                     }}
                                                 >
@@ -866,4 +847,4 @@ class BuySell extends React.Component {
     }
 }
 
-export default BindToChainState(BuySell);
+export default BindToChainState(BuySell, {keep_updating: true});

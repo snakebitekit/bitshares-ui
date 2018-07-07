@@ -1,9 +1,9 @@
 import React from "react";
 import {
     fetchCoins,
-    fetchTradingPairs,
+    fetchBridgeCoins,
     getActiveWallets
-} from "common/gatewayMethods";
+} from "common/blockTradesMethods";
 import Translate from "react-translate-component";
 import {connect} from "alt-react";
 import SettingsStore from "stores/SettingsStore";
@@ -97,7 +97,7 @@ class WinexGateway extends React.Component {
     _getCoins() {
         Promise.all([
             fetchCoins(widechainAPIs.BASE + widechainAPIs.COINS_LIST),
-            fetchTradingPairs(widechainAPIs.BASE + widechainAPIs.TRADING_PAIRS),
+            fetchBridgeCoins(widechainAPIs.BASE),
             getActiveWallets(widechainAPIs.BASE + widechainAPIs.ACTIVE_WALLETS)
         ]).then(result => {
             let [coins, tradingPairs, wallets] = result;

@@ -1,5 +1,4 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, {PropTypes} from "react";
 import FormattedAsset from "./FormattedAsset";
 import ChainTypes from "./ChainTypes";
 import BindToChainState from "./BindToChainState";
@@ -45,4 +44,4 @@ class FormattedFee extends React.Component {
     }
 }
 
-export default BindToChainState(FormattedFee);
+export default BindToChainState(FormattedFee, {keep_updating: true});

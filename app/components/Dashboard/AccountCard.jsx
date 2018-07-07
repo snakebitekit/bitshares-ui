@@ -5,7 +5,6 @@ import ChainTypes from "../Utility/ChainTypes";
 import BindToChainState from "../Utility/BindToChainState";
 import AccountStore from "stores/AccountStore";
 import {ChainStore} from "bitsharesjs/es";
-import {withRouter} from "react-router-dom";
 
 /**
  *  @brief displays the summary of a given account in a condenced view (for the dashboard)
@@ -16,6 +15,10 @@ import {withRouter} from "react-router-dom";
  */
 
 class AccountCard extends React.Component {
+    static contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
+
     static propTypes = {
         account: ChainTypes.ChainAccount.isRequired
     };
@@ -23,7 +26,7 @@ class AccountCard extends React.Component {
     onCardClick(e) {
         e.preventDefault();
         let name = this.props.account.get("name");
-        this.props.history.push(`/account/${name}`);
+        this.context.router.push(`/account/${name}/overview/`);
     }
 
     render() {
@@ -72,5 +75,5 @@ class AccountCard extends React.Component {
         );
     }
 }
-AccountCard = BindToChainState(AccountCard);
-export default withRouter(AccountCard);
+
+export default BindToChainState(AccountCard);

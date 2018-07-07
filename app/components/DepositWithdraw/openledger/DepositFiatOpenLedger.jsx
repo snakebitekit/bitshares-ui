@@ -5,15 +5,14 @@ import utils from "common/utils";
 import counterpart from "counterpart";
 import AmountSelector from "components/Utility/AmountSelector";
 import ZfApi from "react-foundation-apps/src/utils/foundation-api";
-import PropTypes from "prop-types";
 
 class DepositFiatOpenLedger extends React.Component {
     static propTypes = {
         account: ChainTypes.ChainAccount.isRequired,
         issuer_account: ChainTypes.ChainAccount.isRequired,
-        deposit_asset: PropTypes.string,
+        deposit_asset: React.PropTypes.string,
         receive_asset: ChainTypes.ChainAsset.isRequired,
-        rpc_url: PropTypes.string
+        rpc_url: React.PropTypes.string
     };
 
     constructor(props) {
@@ -183,8 +182,8 @@ class DepositFiatOpenLedger extends React.Component {
                     </div>
                 </form>
             );
-        } else {
-            // they haven't clicked deposit, ask them how much they're depositing
+        } // they haven't clicked deposit, ask them how much they're depositing
+        else {
             return (
                 <form className="grid-block vertical full-width-content">
                     <div className="grid-container">
@@ -231,4 +230,4 @@ class DepositFiatOpenLedger extends React.Component {
     }
 }
 
-export default BindToChainState(DepositFiatOpenLedger);
+export default BindToChainState(DepositFiatOpenLedger, {keep_updating: true});

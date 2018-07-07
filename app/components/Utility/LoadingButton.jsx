@@ -2,7 +2,6 @@ import React from "react";
 import LoadingIndicator from "../LoadingIndicator";
 import counterpart from "counterpart";
 import {findDOMNode} from "react-dom";
-import PropTypes from "prop-types";
 
 /** This component gives a convenient way to indicate loading.
  *
@@ -63,18 +62,18 @@ import PropTypes from "prop-types";
  */
 class LoadingButton extends React.Component {
     static propTypes = {
-        id: PropTypes.string,
-        className: PropTypes.string,
-        type: PropTypes.string,
-        style: PropTypes.object,
+        id: React.PropTypes.string,
+        className: React.PropTypes.string,
+        type: React.PropTypes.string,
+        style: React.PropTypes.object,
         //
-        caption: PropTypes.string.isRequired,
-        onClick: PropTypes.func.isRequired,
+        caption: React.PropTypes.string.isRequired,
+        onClick: React.PropTypes.func.isRequired,
         //
-        loadingType: PropTypes.string,
-        loadingMessage: PropTypes.string,
+        loadingType: React.PropTypes.string,
+        loadingMessage: React.PropTypes.string,
         //
-        isLoading: PropTypes.bool
+        isLoading: React.PropTypes.bool
     };
 
     static defaultProps = {

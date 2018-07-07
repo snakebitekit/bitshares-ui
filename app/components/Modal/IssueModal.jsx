@@ -4,10 +4,9 @@ import ChainTypes from "../Utility/ChainTypes";
 import BindToChainState from "../Utility/BindToChainState";
 import utils from "common/utils";
 import counterpart from "counterpart";
-import ApplicationApi from "api/ApplicationApi";
+import AssetActions from "actions/AssetActions";
 import AccountSelector from "../Account/AccountSelector";
 import AmountSelector from "../Utility/AmountSelector";
-import notify from "actions/NotificationActions";
 
 class IssueModal extends React.Component {
     static propTypes = {
@@ -20,11 +19,11 @@ class IssueModal extends React.Component {
             amount: props.amount,
             to: props.to,
             to_id: null,
-            memo: ""
+            memo: null
         };
     }
 
-    onAmountChanged({amount}) {
+    onAmountChanged({amount, asset}) {
         this.setState({amount: amount});
     }
 
@@ -44,10 +43,10 @@ class IssueModal extends React.Component {
         let precision = utils.get_asset_precision(
             asset_to_issue.get("precision")
         );
-        let amount = this.state.amount.toString().replace(/,/g, "");
+        let amount = this.state.amount.replace(/,/g, "");
         amount *= precision;
 
-        ApplicationApi.issue_asset(
+        AssetActions.issueAsset(
             this.state.to_id,
             asset_to_issue.get("issuer"),
             asset_to_issue.get("id"),
@@ -55,20 +54,12 @@ class IssueModal extends React.Component {
             this.state.memo
                 ? new Buffer(this.state.memo, "utf-8")
                 : this.state.memo
-        ).catch(err => {
-            console.log("issue error caught here:", err);
-            notify.addNotification({
-                message: `Failed to issue the asset, probably due to an invalid amount being issued`, //: ${this.state.wallet_public_name}
-                level: "error",
-                autoDismiss: 10
-            });
-        });
+        );
 
         this.setState({
-            amount: 0,
-            to: "",
+            amount: null,
             to_id: null,
-            memo: ""
+            memo: null
         });
     }
 
@@ -127,27 +118,25 @@ class IssueModal extends React.Component {
                     </div>
 
                     <div className="content-block button-group">
-                        <button
+                        <input
                             type="submit"
-                            className="button primary"
+                            className="button success"
                             onClick={this.onSubmit.bind(
                                 this,
                                 this.state.to,
                                 this.state.amount
                             )}
-                            disabled={!this.state.to_id || !this.state.amount}
+                            value={counterpart.translate("modal.issue.submit")}
                             tabIndex={tabIndex++}
-                        >
-                            {counterpart.translate("modal.issue.submit")}
-                        </button>
+                        />
 
-                        <button
-                            className="button primary hollow"
+                        <div
+                            className="button"
                             onClick={this.props.onClose}
                             tabIndex={tabIndex++}
                         >
                             {counterpart.translate("cancel")}
-                        </button>
+                        </div>
                     </div>
                 </div>
             </form>

@@ -14,17 +14,16 @@ import {
     validateAddress,
     WithdrawAddresses,
     getDepositAddress
-} from "common/gatewayMethods";
+} from "common/blockTradesMethods";
 import CopyButton from "../Utility/CopyButton";
 import Icon from "../Icon/Icon";
 import LoadingIndicator from "../LoadingIndicator";
 import {checkFeeStatusAsync, checkBalance} from "common/trxHelper";
 import AssetName from "../Utility/AssetName";
 import {ChainStore} from "bitsharesjs/es";
-import {debounce} from "lodash-es";
+import {debounce} from "lodash";
 import {DecimalChecker} from "../Exchange/ExchangeInput";
-import {openledgerAPIs} from "api/apiConfig";
-import {getWalletName} from "branding";
+import {blockTradesAPIs} from "api/apiConfig";
 
 // import DepositFiatOpenLedger from "components/DepositWithdraw/openledger/DepositFiatOpenLedger";
 // import WithdrawFiatOpenLedger from "components/DepositWithdraw/openledger/WithdrawFiatOpenLedger";
@@ -111,6 +110,7 @@ class DepositWithdrawContent extends DecimalChecker {
         });
 
         if (!receive_address) {
+            console.log("PIZDALOL");
             requestDepositAddress(this._getDepositObject());
         } else {
             this.setState({
@@ -133,6 +133,7 @@ class DepositWithdrawContent extends DecimalChecker {
             loading: true,
             emptyAddressDeposit: false
         });
+        console.log("PIZDALOL2");
         requestDepositAddress(this._getDepositObject());
     }
 
@@ -377,7 +378,7 @@ class DepositWithdrawContent extends DecimalChecker {
 
     _validateAddress(address, props = this.props) {
         validateAddress({
-            url: openledgerAPIs.BASE,
+            url: blockTradesAPIs.BASE_OL,
             walletType: props.walletType,
             newAddress: address
         })
@@ -446,7 +447,6 @@ class DepositWithdrawContent extends DecimalChecker {
                     <Translate
                         content="gateway.withdraw_funds"
                         asset={assetName}
-                        wallet_name={getWalletName()}
                     />
                 </p>
 
@@ -663,7 +663,6 @@ class DepositWithdrawContent extends DecimalChecker {
                         unsafe
                         content="gateway.add_funds"
                         account={this.props.sender.get("name")}
-                        wallet_name={getWalletName()}
                     />
                 </p>
 
@@ -785,7 +784,7 @@ class DepositWithdrawContent extends DecimalChecker {
                         : parseInt(currentBalance.get("balance"), 10)
                 )}
             >
-                <Icon name="clippy" title="icons.clippy.withdraw_full" />
+                <Icon name="clippy" />
             </button>
         );
 

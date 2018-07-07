@@ -28,10 +28,10 @@ class AccountSignedMessages extends React.Component {
         this.state = {
             tabsm_memo_key: this.props.account.get("options").get("memo_key"),
             tabsm_popup: "",
-            tabsm_message_text: "",
-            tabsm_message_signed: "",
+            tabsm_message_text: null,
+            tabsm_message_signed: null,
             tabvm_popup: "",
-            tabvm_message_signed: "",
+            tabvm_message_signed: null,
             tabvm_verified: null,
             tabvm_message_signed_and_verified: null,
             tabvm_flag_verifyonchange: false
@@ -280,9 +280,9 @@ class AccountSignedMessages extends React.Component {
                                         >
                                             <Translate content="account.signedmessages.sign" />
                                         </button>
-                                        <div style={{color: "gray"}}>
+                                        <text style={{color: "gray"}}>
                                             {this.state.tabsm_popup}
-                                        </div>
+                                        </text>
                                     </span>
                                     <br />
                                     <br />

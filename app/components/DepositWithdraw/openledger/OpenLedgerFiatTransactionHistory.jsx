@@ -2,11 +2,10 @@ import React from "react";
 import ChainTypes from "components/Utility/ChainTypes";
 import BindToChainState from "components/Utility/BindToChainState";
 import Translate from "react-translate-component";
-import PropTypes from "prop-types";
 
 class OpenLedgerFiatTransactionHistory extends React.Component {
     static propTypes = {
-        rpc_url: PropTypes.string,
+        rpc_url: React.PropTypes.string,
         account: ChainTypes.ChainAccount
     };
 
@@ -218,4 +217,6 @@ class OpenLedgerFiatTransactionHistory extends React.Component {
     }
 } // OpenLedgerFiatTransactionHistory
 
-export default BindToChainState(OpenLedgerFiatTransactionHistory);
+export default BindToChainState(OpenLedgerFiatTransactionHistory, {
+    keep_updating: true
+});

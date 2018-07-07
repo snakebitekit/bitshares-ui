@@ -15,6 +15,7 @@
             }
         ]
     });
+    // var git = require("git-rev-sync");
 
     var mainWindow;
 
@@ -68,7 +69,7 @@
                           {type: "separator"},
                           {
                               label: "Quit",
-                              accelerator: "CmdOrCtrl+Q",
+                              accelerator: "Command+Q",
                               click: function() {
                                   app.quit();
                               }
@@ -80,7 +81,7 @@
                       submenu: [
                           {
                               label: "Quit",
-                              accelerator: "CmdOrCtrl+Q",
+                              accelerator: "Command+Q",
                               click: function() {
                                   app.quit();
                               }
@@ -95,33 +96,29 @@
                 submenu: [
                     {
                         label: "Undo",
-                        accelerator: "CmdOrCtrl+Z",
+                        accelerator: "Command+Z",
                         selector: "undo:"
                     },
                     {
                         label: "Redo",
-                        accelerator: "Shift+CmdOrCtrl+Z",
+                        accelerator: "Shift+Command+Z",
                         selector: "redo:"
                     },
                     {type: "separator"},
-                    {
-                        label: "Cut",
-                        accelerator: "CmdOrCtrl+X",
-                        selector: "cut:"
-                    },
+                    {label: "Cut", accelerator: "Command+X", selector: "cut:"},
                     {
                         label: "Copy",
-                        accelerator: "CmdOrCtrl+C",
+                        accelerator: "Command+C",
                         selector: "copy:"
                     },
                     {
                         label: "Paste",
-                        accelerator: "CmdOrCtrl+V",
+                        accelerator: "Command+V",
                         selector: "paste:"
                     },
                     {
                         label: "Select All",
-                        accelerator: "CmdOrCtrl+A",
+                        accelerator: "Command+A",
                         selector: "selectAll:"
                     }
                 ]

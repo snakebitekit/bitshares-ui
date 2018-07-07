@@ -1,57 +1,28 @@
 import React from "react";
-import MarketsActions from "actions/MarketsActions";
-import marketUtils from "common/market_utils";
 import utils from "common/utils";
+import MarketsActions from "actions/MarketsActions";
+import Immutable from "immutable";
 
 class MarketStatsCheck extends React.Component {
     constructor() {
         super();
 
         this.fromStatsIntervals = {};
-        this.directStatsIntervals = {};
         this.toStatsInterval = null;
     }
 
-    _statsChanged(newStats = {}, oldStats = {}) {
-        if (!newStats.price) return false;
-        else if (!oldStats.price) return true;
+    _checkStats(newStats = {close: {}}, oldStats = {close: {}}) {
         return (
             newStats.volumeBase !== oldStats.volumeBase ||
-            !newStats.price.equals(oldStats.price)
+            !utils.are_equal_shallow(
+                newStats.close && newStats.close.base,
+                oldStats.close && oldStats.close.base
+            ) ||
+            !utils.are_equal_shallow(
+                newStats.close && newStats.close.quote,
+                oldStats.close && oldStats.close.quote
+            )
         );
-    }
-
-    _useDirectMarket(props) {
-        const {fromAsset, toAsset, marketStats} = props;
-        if (!fromAsset) return false;
-        const {marketName: directMarket} = marketUtils.getMarketName(
-            toAsset,
-            fromAsset
-        );
-
-        const directStats = marketStats.get(directMarket);
-
-        if (directStats && directStats.volumeBase === 0) return false;
-
-        return true;
-    }
-
-    _checkDirectMarkets(props) {
-        let {fromAssets, fromAsset, toAsset, marketStats} = props;
-        if (!fromAssets && fromAsset) fromAssets = [fromAsset];
-
-        return fromAssets
-            .filter(a => !!a)
-            .map(asset => {
-                return this._useDirectMarket({
-                    fromAsset: asset,
-                    toAsset,
-                    marketStats
-                })
-                    ? asset.get("symbol")
-                    : null;
-            })
-            .filter(a => !!a);
     }
 
     componentWillMount() {
@@ -59,118 +30,50 @@ class MarketStatsCheck extends React.Component {
     }
 
     componentWillReceiveProps(np) {
-        const currentDirectMarkets = this._checkDirectMarkets(this.props);
-        const newDirectMarkets = this._checkDirectMarkets(np);
-        if (!utils.are_equal_shallow(currentDirectMarkets, newDirectMarkets)) {
-            this._startUpdates(np);
-        }
+        if (!Immutable.is(np.toAsset, this.props.toAsset)) {
+            this._stopUpdates();
 
-        if (
-            np.toAsset &&
-            this.props.asset &&
-            this.props.toAsset.get("symbol") !== np.asset.get("symbol")
-        ) {
             this._startUpdates(np);
         }
     }
 
     _startUpdates(props) {
-        /* Only run this every x seconds */
-        if (!!this.updatesTimer) return;
-        this.updatesTimer = setTimeout(() => {
-            this.updatesTimer = null;
-        }, 10 * 1000);
-        let {coreAsset, fromAssets, fromAsset, toAsset} = props;
-        if (!fromAssets && fromAsset) fromAssets = [fromAsset];
+        let {coreAsset, fromAssets, fromAsset} = props;
+        if (coreAsset) {
+            if (!fromAssets && fromAsset) fromAssets = [fromAsset];
 
-        let directMarkets = fromAssets
-            .map(asset => {
-                let {marketName: directMarket} = marketUtils.getMarketName(
-                    props.toAsset,
-                    asset
-                );
-                let useDirectMarket = this._useDirectMarket({
-                    toAsset,
-                    fromAsset: asset,
-                    marketStats: props.marketStats
-                });
-
-                if (useDirectMarket && toAsset.get("id") !== asset.get("id")) {
-                    if (!this.directStatsIntervals[directMarket]) {
-                        setTimeout(() => {
-                            this.directStatsIntervals[
-                                directMarket
-                            ] = MarketsActions.getMarketStatsInterval(
-                                5 * 60 * 1000,
-                                asset,
-                                toAsset
-                            );
-                        }, 50);
-                    }
-                }
-                // else if (this.directStatsIntervals[directMarket]) {
-                //     console.log(directMarket, "directStatsIntervals exists, clearing");
-                //     this.directStatsIntervals[directMarket]();
-                // }
-
-                return useDirectMarket ? directMarket : null;
-            })
-            .filter(a => !!a);
-
-        let indirectAssets = fromAssets.filter(f => {
-            let {marketName: directMarket} = marketUtils.getMarketName(
-                props.toAsset,
-                f
-            );
-
-            return directMarkets.indexOf(directMarket) === -1;
-        });
-
-        if (coreAsset && indirectAssets.length) {
             // From assets
-            indirectAssets.forEach(asset => {
+            fromAssets.forEach(asset => {
                 if (asset && asset.get("id") !== coreAsset.get("id")) {
-                    let {marketName} = marketUtils.getMarketName(
-                        coreAsset,
-                        asset
-                    );
-                    if (!this.fromStatsIntervals[marketName]) {
-                        setTimeout(() => {
-                            this.fromStatsIntervals[
-                                marketName
-                            ] = MarketsActions.getMarketStatsInterval(
-                                5 * 60 * 1000,
+                    setTimeout(() => {
+                        MarketsActions.getMarketStats(coreAsset, asset);
+                        this.fromStatsIntervals[asset.get("id")] = setInterval(
+                            MarketsActions.getMarketStats.bind(
+                                this,
                                 coreAsset,
                                 asset
-                            );
-                        }, 50);
-                    }
+                            ),
+                            5 * 60 * 1000
+                        );
+                    }, 50);
                 }
             });
 
-            // To asset
             if (props.toAsset.get("id") !== coreAsset.get("id")) {
                 // wrap this in a timeout to prevent dispatch in the middle of a dispatch
-                this.toStatsInterval = MarketsActions.getMarketStatsInterval(
-                    5 * 60 * 1000,
-                    coreAsset,
-                    props.toAsset
-                );
+                MarketsActions.getMarketStats(coreAsset, props.toAsset);
+                this.toStatsInterval = setInterval(() => {
+                    MarketsActions.getMarketStats(coreAsset, props.toAsset);
+                }, 5 * 60 * 1000);
             }
         }
     }
 
     _stopUpdates() {
         for (let key in this.fromStatsIntervals) {
-            this.fromStatsIntervals[key]();
-            delete this.fromStatsIntervals[key];
+            clearInterval(this.fromStatsIntervals[key]);
         }
-        for (let key in this.directStatsIntervals) {
-            this.directStatsIntervals[key]();
-            delete this.directStatsIntervals[key];
-        }
-        if (this.toStatsInterval) this.toStatsInterval();
-        this.toStatsInterval = null;
+        clearInterval(this.toStatsInterval);
     }
 
     componentWillUnmount() {
@@ -179,43 +82,20 @@ class MarketStatsCheck extends React.Component {
 
     shouldComponentUpdate(np) {
         let {fromAsset, fromAssets} = this.props;
-
-        const {marketName: toMarket} = marketUtils.getMarketName(
-            np.toAsset,
-            np.coreAsset
-        );
-
+        const toMarket =
+            np.toAsset.get("symbol") + "_" + np.coreAsset.get("symbol");
         if (!fromAssets && fromAsset) fromAssets = [fromAsset];
-        function getMarketNames(assets, toAsset) {
-            return assets
-                .map(asset => {
-                    if (!asset) return null;
-                    const {marketName} = marketUtils.getMarketName(
-                        asset,
-                        toAsset
-                    );
-                    return marketName;
-                })
-                .filter(a => !!a);
-        }
+        const fromMarkets = fromAssets
+            .map(asset => {
+                if (!asset) return null;
+                return asset.get("symbol") + "_" + np.coreAsset.get("symbol");
+            })
+            .filter(a => !!a);
 
-        const directMarkets = getMarketNames(fromAssets, np.toAsset);
-        const indirectMarkets = getMarketNames(fromAssets, np.coreAsset);
-
-        const indirectCheck = indirectMarkets.reduce((a, b) => {
+        const fromCheck = fromMarkets.reduce((a, b) => {
             return (
                 a ||
-                this._statsChanged(
-                    np.marketStats.get(b),
-                    this.props.marketStats.get(b)
-                )
-            );
-        }, false);
-
-        const directCheck = directMarkets.reduce((a, b) => {
-            return (
-                a ||
-                this._statsChanged(
+                this._checkStats(
                     np.marketStats.get(b),
                     this.props.marketStats.get(b)
                 )
@@ -223,12 +103,10 @@ class MarketStatsCheck extends React.Component {
         }, false);
 
         return (
-            this._statsChanged(
+            this._checkStats(
                 np.marketStats.get(toMarket),
                 this.props.marketStats.get(toMarket)
-            ) ||
-            indirectCheck ||
-            directCheck
+            ) || fromCheck
         );
     }
 }

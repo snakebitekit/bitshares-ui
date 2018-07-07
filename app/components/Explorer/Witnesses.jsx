@@ -11,7 +11,7 @@ import {connect} from "alt-react";
 import SettingsActions from "actions/SettingsActions";
 import SettingsStore from "stores/SettingsStore";
 import classNames from "classnames";
-import {withRouter} from "react-router-dom";
+import Explorer from "./Explorer";
 
 require("./witnesses.scss");
 
@@ -20,9 +20,13 @@ class WitnessCard extends React.Component {
         witness: ChainTypes.ChainAccount.isRequired
     };
 
+    static contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
+
     _onCardClick(e) {
         e.preventDefault();
-        this.props.history.push(`/account/${this.props.witness.get("name")}`);
+        this.context.router.push(`/account/${this.props.witness.get("name")}`);
     }
 
     render() {
@@ -98,17 +102,20 @@ class WitnessCard extends React.Component {
         );
     }
 }
-WitnessCard = BindToChainState(WitnessCard);
-WitnessCard = withRouter(WitnessCard);
+WitnessCard = BindToChainState(WitnessCard, {keep_updating: true});
 
 class WitnessRow extends React.Component {
     static propTypes = {
         witness: ChainTypes.ChainAccount.isRequired
     };
 
+    static contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
+
     _onRowClick(e) {
         e.preventDefault();
-        this.props.history.push(`/account/${this.props.witness.get("name")}`);
+        this.context.router.push(`/account/${this.props.witness.get("name")}`);
     }
 
     // componentWillUnmount() {
@@ -171,8 +178,7 @@ class WitnessRow extends React.Component {
         );
     }
 }
-WitnessRow = BindToChainState(WitnessRow);
-WitnessRow = withRouter(WitnessRow);
+WitnessRow = BindToChainState(WitnessRow, {keep_updating: true});
 
 class WitnessList extends React.Component {
     static propTypes = {
@@ -374,6 +380,7 @@ class WitnessList extends React.Component {
     }
 }
 WitnessList = BindToChainState(WitnessList, {
+    keep_updating: true,
     show_loader: true
 });
 
@@ -429,7 +436,7 @@ class Witnesses extends React.Component {
             );
         }
 
-        return (
+        let content = (
             <div className="grid-block">
                 <div className="grid-block">
                     <div className="grid-block vertical small-5 medium-3">
@@ -563,9 +570,10 @@ class Witnesses extends React.Component {
                 </div>
             </div>
         );
+        return <Explorer tab="witnesses" content={content} />;
     }
 }
-Witnesses = BindToChainState(Witnesses);
+Witnesses = BindToChainState(Witnesses, {keep_updating: true});
 
 class WitnessStoreWrapper extends React.Component {
     render() {

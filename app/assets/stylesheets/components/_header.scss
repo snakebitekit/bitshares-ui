@@ -17,24 +17,26 @@
         border: none;
     }
     &.primary {
-        border-bottom: none;
+        // border-bottom: 1px solid $border-color;
     }
     padding-left: 0 !important;
-    // min-height: 64px;
-    // text-transform: uppercase;
+    min-height: 65px;
     .menu-bar > li {
         padding: 0;
-        border-right: none;
+        border-right: 1px solid $border-color;
         > a {
-            font-weight: bold;
+            text-transform: uppercase;
             line-height: 2rem;
             padding-left: 1.25rem;
             padding-right: 0.75rem;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             @include breakpoint(large) {
-                padding-left: 1.75rem;
-                padding-right: 1.75rem;
+                padding-left: 20px;
+                padding-right: 20px;
             }
+        }
+        &:empty {
+            display: none;
         }
     }
 
@@ -56,13 +58,10 @@ div.header-balance {
 }
 
 div.account-drop-down {
-    font-size: 90%;
     .dropdown-divider {
         padding-bottom: 10px;
     }
     a.button {
-        font-weight: bold;
-        font-size: 90%;
         background-color: transparent;
     }
     a:active.button,
@@ -165,11 +164,13 @@ div.account-drop-down div.menu-dropdown-wrapper {
 
 ul.dropdown.header-menu {
     transition: padding 0s, height 3s linear;
-    border: none;
+    border-left: 1px solid $border-color;
     z-index: 1004;
+    font-size: 0.9rem;
+    user-select: none;
     > li {
         height: 41px;
-        padding: 2px 5px 2px 10px;
+        padding: 2px 5px 2px 20px;
         > div {
             vertical-align: middle;
         }

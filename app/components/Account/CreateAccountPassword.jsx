@@ -6,7 +6,7 @@ import AccountStore from "stores/AccountStore";
 import AccountNameInput from "./../Forms/AccountNameInput";
 import WalletDb from "stores/WalletDb";
 import notify from "actions/NotificationActions";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import AccountSelect from "../Forms/AccountSelect";
 import TransactionConfirmStore from "stores/TransactionConfirmStore";
 import LoadingIndicator from "../LoadingIndicator";
@@ -19,10 +19,12 @@ import SettingsActions from "actions/SettingsActions";
 import WalletUnlockActions from "actions/WalletUnlockActions";
 import Icon from "../Icon/Icon";
 import CopyButton from "../Utility/CopyButton";
-import {withRouter} from "react-router-dom";
-import {scroller} from "react-scroll";
 
 class CreateAccountPassword extends React.Component {
+    static contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
+
     constructor() {
         super();
         this.state = {
@@ -47,8 +49,6 @@ class CreateAccountPassword extends React.Component {
         this.onFinishConfirm = this.onFinishConfirm.bind(this);
 
         this.accountNameInput = null;
-
-        this.scrollToInput = this.scrollToInput.bind(this);
     }
 
     componentWillMount() {
@@ -62,20 +62,10 @@ class CreateAccountPassword extends React.Component {
 
     componentDidMount() {
         ReactTooltip.rebuild();
-        this.scrollToInput();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         return !utils.are_equal_shallow(nextState, this.state);
-    }
-
-    scrollToInput() {
-        scroller.scrollTo(`scrollToInput`, {
-            duration: 1500,
-            delay: 100,
-            smooth: true,
-            containerId: "accountForm"
-        });
     }
 
     isValid() {
@@ -109,9 +99,7 @@ class CreateAccountPassword extends React.Component {
             FetchChain("getAccount", this.state.accountName, undefined, {
                 [this.state.accountName]: true
             }).then(() => {
-                this.props.history.push(
-                    "/wallet/backup/create?newAccount=true"
-                );
+                this.props.router.push("/wallet/backup/create?newAccount=true");
             });
         }
     }
@@ -265,25 +253,21 @@ class CreateAccountPassword extends React.Component {
                                     "tooltip.generate"
                                 )}
                             >
-                                <Icon
-                                    name="question-circle"
-                                    title="icons.question_circle"
-                                />
+                                <Icon name="question-circle" />
                             </span>
                         </label>
                         <div style={{paddingBottom: "0.5rem"}}>
                             <span className="inline-label">
-                                <textarea
+                                <input
                                     style={{
-                                        padding: "0px",
-                                        marginBottom: "0px"
+                                        maxWidth: "calc(30rem - 48px)",
+                                        fontSize: "80%"
                                     }}
-                                    rows="3"
-                                    readOnly
                                     disabled
-                                >
-                                    {this.state.generatedPassword}
-                                </textarea>
+                                    value={this.state.generatedPassword}
+                                    type="text"
+                                    className="input-button"
+                                />
                                 <CopyButton
                                     text={this.state.generatedPassword}
                                     tip="tooltip.copy_password"
@@ -544,7 +528,7 @@ class CreateAccountPassword extends React.Component {
                 <div
                     style={{width: "100%"}}
                     onClick={() => {
-                        this.props.history.push("/");
+                        this.context.router.push("/dashboard");
                     }}
                     className="button"
                 >
@@ -564,7 +548,7 @@ class CreateAccountPassword extends React.Component {
                                 <Translate content="wallet.tips_dashboard" />:
                             </td>
                             <td>
-                                <Link to="/">
+                                <Link to="/dashboard">
                                     <Translate content="header.dashboard" />
                                 </Link>
                             </td>
@@ -656,11 +640,7 @@ class CreateAccountPassword extends React.Component {
         // let my_accounts = AccountStore.getMyAccounts();
         // let firstAccount = my_accounts.length === 0;
         return (
-            <div
-                className="sub-content"
-                id="scrollToInput"
-                name="scrollToInput"
-            >
+            <div className="sub-content">
                 <div>
                     {step === 2 ? (
                         <p
@@ -688,8 +668,6 @@ class CreateAccountPassword extends React.Component {
         );
     }
 }
-
-CreateAccountPassword = withRouter(CreateAccountPassword);
 
 export default connect(
     CreateAccountPassword,

@@ -1,8 +1,44 @@
 import React from "react";
 import Translate from "react-translate-component";
 import Icon from "../../components/Icon/Icon";
-import {getGatewayStatusByAsset} from "common/gatewayUtils";
-import {getWalletURL} from "../../branding";
+
+function _getAvailableGateways(selectedAsset, boolCheck = "depositAllowed") {
+    let {gatewayStatus} = this.state;
+
+    for (let g in gatewayStatus) {
+        gatewayStatus[g].enabled = false;
+    }
+
+    for (let g in gatewayStatus) {
+        this.props.backedCoins.get(g.toUpperCase(), []).find(c => {
+            if (
+                g == "OPEN" &&
+                selectedAsset == c.backingCoinType &&
+                c[boolCheck] &&
+                c.isAvailable
+            ) {
+                gatewayStatus.OPEN.enabled = true;
+            }
+            if (
+                g == "CITADEL" &&
+                selectedAsset == c.backingCoinType &&
+                c[boolCheck] &&
+                c.isAvailable
+            ) {
+                gatewayStatus.CITADEL.enabled = true;
+            }
+            if (
+                g == "RUDEX" &&
+                selectedAsset == c.backingCoin &&
+                c[boolCheck]
+            ) {
+                gatewayStatus.RUDEX.enabled = true;
+            }
+        });
+    }
+
+    return gatewayStatus;
+}
 
 function _getCoinToGatewayMapping(boolCheck = "depositAllowed") {
     let coinToGatewayMapping = {};
@@ -28,12 +64,7 @@ function _getCoinToGatewayMapping(boolCheck = "depositAllowed") {
 
 function _openGatewaySite() {
     let {selectedGateway, gatewayStatus} = this.state;
-    let win = window.open(
-        getWalletURL() +
-            "/#/help/gateways/" +
-            gatewayStatus[selectedGateway].name.toLowerCase().replace("-", ""),
-        "_blank"
-    );
+    let win = window.open(gatewayStatus[selectedGateway].support_url, "_blank");
     win.focus();
 }
 
@@ -44,10 +75,25 @@ function _getNumberAvailableGateways() {
     for (let g in gatewayStatus) {
         this.props.backedCoins.get(g.toUpperCase(), []).find(c => {
             if (
-                ((selectedAsset == c.backingCoinType ||
-                    selectedAsset == c.backingCoin) &&
-                    c.depositAllowed) ||
+                g == "OPEN" &&
+                selectedAsset == c.backingCoinType &&
+                c.depositAllowed &&
                 c.isAvailable
+            ) {
+                nAvailableGateways++;
+            }
+            if (
+                g == "CITADEL" &&
+                selectedAsset == c.backingCoinType &&
+                c.depositAllowed &&
+                c.isAvailable
+            ) {
+                nAvailableGateways++;
+            }
+            if (
+                g == "RUDEX" &&
+                selectedAsset == c.backingCoin &&
+                c.depositAllowed
             ) {
                 nAvailableGateways++;
             }
@@ -63,7 +109,7 @@ function _onAssetSelected(
     selectGatewayFn = null
 ) {
     const {balances, assets} = this.props || {}; //Function must be bound on calling component and these props must be passed to calling component
-    let gatewayStatus = getGatewayStatusByAsset.call(
+    let gatewayStatus = _getAvailableGateways.call(
         this,
         selectedAsset,
         boolCheck
@@ -147,18 +193,6 @@ function gatewaySelector(args) {
         onGatewayChanged
     } = args;
 
-    let selectGatewayList = Object.keys(gatewayStatus).map((key, i) => {
-        if (gatewayStatus[key].options.enabled)
-            return (
-                <option
-                    value={gatewayStatus[key].id}
-                    key={gatewayStatus[key].id}
-                >
-                    {gatewayStatus[key].name}
-                </option>
-            );
-    });
-
     return (
         <div className="container-row">
             <div className="no-margin no-padding">
@@ -169,16 +203,13 @@ function gatewaySelector(args) {
                             <span style={{cursor: "pointer"}}>
                                 &nbsp;<Icon
                                     name="question-circle"
-                                    title="icons.question_circle"
                                     onClick={_openGatewaySite.bind(this)}
                                 />
                             </span>
                         ) : null}
                         <span className="floatRight error-msg">
-                            {!error &&
-                            selectedGateway &&
-                            gatewayStatus[selectedGateway] &&
-                            !gatewayStatus[selectedGateway].options.enabled ? (
+                            {selectedGateway &&
+                            !gatewayStatus[selectedGateway].enabled ? (
                                 <Translate content="modal.deposit_withdraw.disabled" />
                             ) : null}
                             {error ? (
@@ -206,11 +237,24 @@ function gatewaySelector(args) {
                                     content="modal.deposit_withdraw.select_gateway"
                                 />
                             ) : null}
-                            {selectGatewayList}
+                            {gatewayStatus.RUDEX.enabled ? (
+                                <option value="RUDEX">
+                                    {gatewayStatus.RUDEX.name}
+                                </option>
+                            ) : null}
+                            {gatewayStatus.OPEN.enabled ? (
+                                <option value="OPEN">
+                                    {gatewayStatus.OPEN.name}
+                                </option>
+                            ) : null}
+                            {gatewayStatus.CITADEL.enabled ? (
+                                <option value="CITADEL">
+                                    {gatewayStatus.CITADEL.name}
+                                </option>
+                            ) : null}
                         </select>
                         <Icon
                             name="chevron-down"
-                            title="icons.chevron_down.gateways"
                             style={{
                                 position: "absolute",
                                 right: "10px",
@@ -225,6 +269,7 @@ function gatewaySelector(args) {
 }
 
 export {
+    _getAvailableGateways,
     gatewaySelector,
     _getNumberAvailableGateways,
     _onAssetSelected,

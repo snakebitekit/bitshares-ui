@@ -1,5 +1,5 @@
 import React from "react";
-import ReactHighchart from "react-highcharts";
+import ReactHighstock from "react-highcharts/dist/ReactHighstock";
 import counterpart from "counterpart";
 
 class TransactionChart extends React.Component {
@@ -155,7 +155,7 @@ class TransactionChart extends React.Component {
         };
 
         return trxData.length ? (
-            <ReactHighchart ref="trx_chart" config={config} />
+            <ReactHighstock ref="trx_chart" config={config} />
         ) : null;
     }
 }

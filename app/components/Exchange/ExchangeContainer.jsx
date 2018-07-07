@@ -3,7 +3,6 @@ import MarketsStore from "stores/MarketsStore";
 import AccountStore from "stores/AccountStore";
 import SettingsStore from "stores/SettingsStore";
 import GatewayStore from "stores/GatewayStore";
-import IntlStore from "stores/IntlStore";
 import WalletUnlockStore from "stores/WalletUnlockStore";
 import AltContainer from "alt-container";
 import Exchange from "./Exchange";
@@ -11,26 +10,20 @@ import ChainTypes from "../Utility/ChainTypes";
 import {EmitterInstance} from "bitsharesjs/es";
 import BindToChainState from "../Utility/BindToChainState";
 import MarketsActions from "actions/MarketsActions";
-import {DataFeed} from "components/Exchange/tradingViewClasses";
-import Page404 from "../Page404/Page404";
 
 class ExchangeContainer extends React.Component {
     render() {
-        let symbols = this.props.match.params.marketID.toUpperCase().split("_");
-        if (symbols[0] === symbols[1]) {
-            return <Page404 subtitle="market_not_found_subtitle" />;
-        }
+        let symbols = this.props.params.marketID.split("_");
+
         return (
             <AltContainer
                 stores={[
                     MarketsStore,
                     AccountStore,
                     SettingsStore,
-                    WalletUnlockStore,
-                    IntlStore
+                    WalletUnlockStore
                 ]}
                 inject={{
-                    locale: () => IntlStore.getState().currentLocale,
                     lockedWalletState: () => {
                         return WalletUnlockStore.getState().locked;
                     },
@@ -51,6 +44,12 @@ class ExchangeContainer extends React.Component {
                     },
                     totals: () => {
                         return MarketsStore.getState().totals;
+                    },
+                    priceData: () => {
+                        return MarketsStore.getState().priceData;
+                    },
+                    volumeData: () => {
+                        return MarketsStore.getState().volumeData;
                     },
                     activeMarketHistory: () => {
                         return MarketsStore.getState().activeMarketHistory;
@@ -108,21 +107,11 @@ class ExchangeContainer extends React.Component {
                             "miniDepthChart",
                             true
                         );
-                    },
-
-                    dataFeed: () => new DataFeed(),
-
-                    trackedGroupsConfig: () => {
-                        return MarketsStore.getState().trackedGroupsConfig;
-                    },
-                    currentGroupOrderLimit: () => {
-                        return MarketsStore.getState().currentGroupLimit;
                     }
                 }}
             >
                 <ExchangeSubscriber
-                    history={this.props.history}
-                    location={this.props.location}
+                    router={this.props.router}
                     quoteAsset={symbols[0]}
                     baseAsset={symbols[1]}
                 />
@@ -151,7 +140,7 @@ class ExchangeSubscriber extends React.Component {
         coreAsset: "1.3.0"
     };
 
-    constructor(props) {
+    constructor() {
         super();
         this.state = {sub: null};
 
@@ -159,9 +148,6 @@ class ExchangeSubscriber extends React.Component {
     }
 
     componentWillMount() {
-        if (this.props.quoteAsset === null || this.props.baseAsset === null) {
-            return;
-        }
         if (this.props.quoteAsset.toJS && this.props.baseAsset.toJS) {
             this._subToMarket(this.props);
             // this._addMarket(this.props.quoteAsset.get("symbol"), this.props.baseAsset.get("symbol"));
@@ -214,15 +200,12 @@ class ExchangeSubscriber extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.quoteAsset === null || nextProps.baseAsset === null) {
-            return;
-        }
         /* Prediction markets should only be shown in one direction, if the link goes to the wrong one we flip it */
         if (
             nextProps.baseAsset &&
             nextProps.baseAsset.getIn(["bitasset", "is_prediction_market"])
         ) {
-            this.props.history.push(
+            this.props.router.push(
                 `/market/${nextProps.baseAsset.get(
                     "symbol"
                 )}_${nextProps.quoteAsset.get("symbol")}`
@@ -252,10 +235,6 @@ class ExchangeSubscriber extends React.Component {
 
     componentWillUnmount() {
         let {quoteAsset, baseAsset} = this.props;
-        if (quoteAsset === null || baseAsset === null) {
-            return;
-        }
-
         MarketsActions.unSubscribeMarket(
             quoteAsset.get("id"),
             baseAsset.get("id")
@@ -269,20 +248,16 @@ class ExchangeSubscriber extends React.Component {
         }
     }
 
-    _subToMarket(props, newBucketSize, newGroupLimit) {
-        let {quoteAsset, baseAsset, bucketSize, currentGroupOrderLimit} = props;
+    _subToMarket(props, newBucketSize) {
+        let {quoteAsset, baseAsset, bucketSize} = props;
         if (newBucketSize) {
             bucketSize = newBucketSize;
-        }
-        if (newGroupLimit) {
-            currentGroupOrderLimit = newGroupLimit;
         }
         if (quoteAsset.get("id") && baseAsset.get("id")) {
             MarketsActions.subscribeMarket.defer(
                 baseAsset,
                 quoteAsset,
-                bucketSize,
-                currentGroupOrderLimit
+                bucketSize
             );
             this.setState({
                 sub: `${quoteAsset.get("id")}_${baseAsset.get("id")}`
@@ -291,9 +266,6 @@ class ExchangeSubscriber extends React.Component {
     }
 
     render() {
-        if (this.props.quoteAsset === null || this.props.baseAsset === null)
-            return <Page404 subtitle="market_not_found_subtitle" />;
-
         return (
             <Exchange
                 {...this.props}
@@ -305,6 +277,7 @@ class ExchangeSubscriber extends React.Component {
 }
 
 ExchangeSubscriber = BindToChainState(ExchangeSubscriber, {
+    keep_updating: true,
     show_loader: true
 });
 

@@ -31,17 +31,19 @@ function checkFeePoolAsync({
         } else {
             Promise.all([
                 estimateFeeAsync(type, options, data),
-                FetchChain("getObject", assetID.replace(/^1\./, "2."))
+                FetchChain("getAsset", assetID)
             ]).then(result => {
-                const [fee, dynamicObject] = result;
-                res(parseInt(dynamicObject.get("fee_pool"), 10) >= fee);
+                const [fee, feeAsset] = result;
+                FetchChain(
+                    "getObject",
+                    feeAsset.get("dynamic_asset_data_id")
+                ).then(dynamicObject => {
+                    res(parseInt(dynamicObject.get("fee_pool"), 10) >= fee);
+                });
             });
         }
     });
 }
-
-let asyncCache = {};
-const feeStatusTTL = 60000; // 1 minute
 
 function checkFeeStatusAsync({
     accountID,
@@ -50,28 +52,7 @@ function checkFeeStatusAsync({
     options = null,
     data
 } = {}) {
-    let key =
-        accountID +
-        "_" +
-        feeID +
-        "_" +
-        type +
-        "_" +
-        JSON.stringify(options) +
-        "_" +
-        JSON.stringify(data);
-
-    if (asyncCache[key]) {
-        if (asyncCache[key].result) {
-            return Promise.resolve(asyncCache[key].result);
-        }
-        return new Promise((res, rej) => {
-            asyncCache[key].queue.push({res, rej});
-        });
-    }
-
     return new Promise((res, rej) => {
-        asyncCache[key] = {queue: [{res, rej}], result: null};
         Promise.all([
             estimateFeeAsync(type, options, data),
             checkFeePoolAsync({assetID: feeID, type, options, data}),
@@ -92,26 +73,12 @@ function checkFeeStatusAsync({
                 let coreBalanceID = account.getIn(["balances", "1.3.0"]),
                     feeBalanceID = account.getIn(["balances", feeID]);
 
-                if (feeID === "1.3.0" && !coreBalanceID) {
-                    asyncCache[key].queue.forEach(promise => {
-                        promise.res({
-                            fee: new Asset({amount: coreFee}),
-                            hasBalance,
-                            hasPoolBalance
-                        });
+                if (feeID === "1.3.0" && !coreBalanceID)
+                    return res({
+                        fee: new Asset({amount: coreFee}),
+                        hasBalance,
+                        hasPoolBalance
                     });
-                    asyncCache[key] = {
-                        result: {
-                            fee: new Asset({amount: coreFee}),
-                            hasBalance,
-                            hasPoolBalance
-                        }
-                    };
-                    setTimeout(() => {
-                        delete asyncCache[key];
-                    }, feeStatusTTL);
-                    return;
-                }
 
                 Promise.all([
                     coreBalanceID
@@ -167,27 +134,10 @@ function checkFeeStatusAsync({
                     )
                         hasBalance = true;
 
-                    asyncCache[key].queue.forEach(promise => {
-                        promise.res({
-                            fee,
-                            hasBalance,
-                            hasPoolBalance,
-                            hasValidCER
-                        });
-                    });
-                    asyncCache[key] = {
-                        result: {fee, hasBalance, hasPoolBalance, hasValidCER}
-                    };
-                    setTimeout(() => {
-                        delete asyncCache[key];
-                    }, feeStatusTTL);
+                    res({fee, hasBalance, hasPoolBalance, hasValidCER});
                 });
             })
-            .catch(() => {
-                asyncCache[key].queue.forEach(promise => {
-                    promise.rej();
-                });
-            });
+            .catch(rej);
     });
 }
 

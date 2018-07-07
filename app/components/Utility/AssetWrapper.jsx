@@ -74,10 +74,7 @@ function AssetWrapper(Component, options = {}) {
             let passTroughProps = {};
             let dos = List();
             Object.keys(this.props).forEach(prop => {
-                if (
-                    this.props[prop] &&
-                    options.propNames.indexOf(prop) !== -1
-                ) {
+                if (options.propNames.indexOf(prop) !== -1) {
                     if (options.withDynamic) {
                         if (!options.asList) {
                             dos = dos.push(

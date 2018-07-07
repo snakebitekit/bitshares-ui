@@ -2,7 +2,7 @@ import React from "react";
 import {FormattedNumber} from "react-intl";
 import utils from "common/utils";
 import assetUtils from "common/asset_utils";
-import PropTypes from "prop-types";
+import {PropTypes} from "react";
 import Popover from "react-popover";
 import HelpContent from "./HelpContent";
 import AssetName from "./AssetName";
@@ -28,7 +28,10 @@ class SupplyPercentage extends React.Component {
 
     render() {
         let supply = parseInt(this.props.do.get("current_supply"), 10);
-        let percent = utils.format_number(this.props.amount / supply * 100, 4);
+        let percent = utils.format_number(
+            (this.props.amount / supply) * 100,
+            4
+        );
         return <span className={this.props.colorClass}>{percent}%</span>;
     }
 }

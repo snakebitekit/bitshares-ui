@@ -2,11 +2,10 @@ import React from "react";
 import {connect} from "alt-react";
 import SettingsStore from "../../../stores/SettingsStore";
 import Ps from "perfect-scrollbar";
-import PropTypes from "prop-types";
 
 class GdexAgreementModal extends React.Component {
     static propTypes = {
-        locale: PropTypes.string
+        locale: React.PropTypes.string
     };
 
     constructor(props) {

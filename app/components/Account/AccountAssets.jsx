@@ -1,6 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
-import {Link} from "react-router-dom";
+import {PropTypes} from "react";
+import {Link} from "react-router/es";
 import Translate from "react-translate-component";
 import AssetActions from "actions/AssetActions";
 import AssetStore from "stores/AssetStore";
@@ -10,7 +10,7 @@ import FormattedAsset from "../Utility/FormattedAsset";
 import ZfApi from "react-foundation-apps/src/utils/foundation-api";
 import notify from "actions/NotificationActions";
 import utils from "common/utils";
-import {debounce} from "lodash-es";
+import {debounce} from "lodash";
 import LoadingIndicator from "../LoadingIndicator";
 import IssueModal from "../Modal/IssueModal";
 import ReserveAssetModal from "../Modal/ReserveAssetModal";
@@ -115,10 +115,48 @@ class AccountAssets extends React.Component {
         AccountActions.accountSearch(searchTerm);
     }
 
+    _issueAsset(account_id, e) {
+        e.preventDefault();
+        ZfApi.publish("issue_asset", "close");
+        let {issue} = this.state;
+        let asset = this.props.assets.get(issue.asset_id);
+        issue.amount *= utils.get_asset_precision(asset.precision);
+        AssetActions.issueAsset(account_id, issue).then(result => {
+            if (result) {
+                notify.addNotification({
+                    message: `Successfully issued ${utils.format_asset(
+                        issue.amount,
+                        this.props.assets.get(issue.asset_id)
+                    )}`, //: ${this.state.wallet_public_name}
+                    level: "success",
+                    autoDismiss: 10
+                });
+
+                // Update the data for the asset
+                ChainStore.getAsset(issue.asset_id);
+            } else {
+                notify.addNotification({
+                    message: "Failed to issue asset", //: ${this.state.wallet_public_name}
+                    level: "error",
+                    autoDismiss: 10
+                });
+            }
+        });
+    }
+
     _reserveButtonClick(assetId, e) {
         e.preventDefault();
         this.setState({reserve: assetId});
         ZfApi.publish("reserve_asset", "open");
+    }
+
+    _reserveAsset(account_id, e) {
+        e.preventDefault();
+        ZfApi.publish("reserve_asset", "close");
+        let {issue} = this.state;
+        let asset = this.props.assets.get(issue.asset_id);
+        issue.amount *= utils.get_asset_precision(asset.precision);
+        AssetActions.issueAsset(account_id, issue);
     }
 
     _issueButtonClick(asset_id, symbol, e) {
@@ -132,9 +170,16 @@ class AccountAssets extends React.Component {
 
     _editButtonClick(symbol, account_name, e) {
         e.preventDefault();
-        this.props.history.push(
+        this.props.router.push(
             `/account/${account_name}/update-asset/${symbol}`
         );
+    }
+
+    _onAccountSelect(account_name) {
+        let {issue} = this.state;
+        issue.to = account_name;
+        issue.to_id = this.props.account_name_to_id[account_name];
+        this.setState({issue: issue});
     }
 
     render() {

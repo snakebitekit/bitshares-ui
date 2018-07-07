@@ -9,7 +9,7 @@ import AccountStore from "stores/AccountStore";
 import AccountSelector from "../Account/AccountSelector";
 import TransactionConfirmStore from "stores/TransactionConfirmStore";
 import {Asset} from "common/MarketClasses";
-import {debounce, isNaN} from "lodash-es";
+import {debounce, isNaN} from "lodash";
 import {
     checkFeeStatusAsync,
     checkBalance,
@@ -21,14 +21,15 @@ import utils from "common/utils";
 import counterpart from "counterpart";
 import {connect} from "alt-react";
 import classnames from "classnames";
-import PropTypes from "prop-types";
-import {getWalletName} from "branding";
 
 class SendModal extends React.Component {
+    static contextTypes = {
+        router: React.PropTypes.object
+    };
+
     constructor(props) {
         super(props);
         this.state = this.getInitialState(props);
-        this.nestedRef = null;
 
         this.onTrxIncluded = this.onTrxIncluded.bind(this);
 
@@ -178,6 +179,12 @@ class SendModal extends React.Component {
         }
     }
 
+    componentWillMount() {
+        this.nestedRef = null;
+        this._updateFee();
+        this._checkFeeStatus();
+    }
+
     shouldComponentUpdate(np, ns) {
         let {asset_types: current_types} = this._getAvailableAssets();
         let {asset_types: next_asset_types} = this._getAvailableAssets(ns);
@@ -198,7 +205,6 @@ class SendModal extends React.Component {
             }
         }
 
-        if (ns.open && !this.state.open) this._checkFeeStatus(ns);
         if (!ns.open && !this.state.open) return false;
         return true;
     }
@@ -222,7 +228,7 @@ class SendModal extends React.Component {
                 },
                 () => {
                     this._updateFee();
-                    this._checkFeeStatus();
+                    this._checkFeeStatus(ChainStore.getAccount(np.from_name));
                 }
             );
         }
@@ -258,11 +264,10 @@ class SendModal extends React.Component {
         this.setState({balanceError: !hasBalance});
     }
 
-    _checkFeeStatus(state = this.state) {
-        let {from_account, open} = state;
-        if (!from_account || !open) return;
+    _checkFeeStatus(account = this.state.from_account) {
+        if (!account) return;
 
-        const assets = Object.keys(from_account.get("balances").toJS()).sort(
+        const assets = Object.keys(account.get("balances").toJS()).sort(
             utils.sortID
         );
         let feeStatus = {};
@@ -270,7 +275,7 @@ class SendModal extends React.Component {
         assets.forEach(a => {
             p.push(
                 checkFeeStatusAsync({
-                    accountID: from_account.get("id"),
+                    accountID: account.get("id"),
                     feeID: a,
                     options: ["price_per_kbyte"],
                     data: {
@@ -358,7 +363,6 @@ class SendModal extends React.Component {
     }
 
     _updateFee(state = this.state) {
-        if (!state.open) return;
         let {fee_asset_id, from_account, asset_id} = state;
         const {fee_asset_types} = this._getAvailableAssets(state);
         if (
@@ -431,7 +435,7 @@ class SendModal extends React.Component {
     }
 
     onMemoChanged(e) {
-        let {asset_types} = this._getAvailableAssets();
+        let {asset_types, fee_asset_types} = this._getAvailableAssets();
         let {from_account, from_error, maxAmount} = this.state;
         if (
             from_account &&
@@ -502,6 +506,11 @@ class SendModal extends React.Component {
 
     onProposeAccount(propose_account) {
         this.setState({propose_account});
+    }
+
+    onProposeTooltip() {
+        this.onClose();
+        this.context.router.push("/help/accounts/proposed");
     }
 
     render() {
@@ -667,10 +676,7 @@ class SendModal extends React.Component {
                                 }}
                             >
                                 <p>
-                                    <Translate
-                                        content="transfer.header_subheader"
-                                        wallet_name={getWalletName()}
-                                    />
+                                    <Translate content="transfer.header_subheader" />
                                 </p>
                             </div>
                         </div>
@@ -793,6 +799,16 @@ class SendModal extends React.Component {
                                                     scroll_length={2}
                                                 />
                                             </div>
+                                            {/* <div className="small-6" style={{display: "inline-block", paddingLeft: "2rem"}}>
+                                            <span className="grid-block tooltip" data-place="top" data-tip={counterpart.translate("tooltip.propose_tip")} onClick={this.onProposeTooltip.bind(this)}>
+                                                <Translate className="left-label" component="label" content="propose"/>
+                                                <Icon style={{position: "relative", top: 0, marginLeft: "0.5rem"}} name="question-circle" />
+                                            </span>
+                                            <div className="switch" style={{marginBottom: "-6px"}} onClick={this.onPropose.bind(this)}>
+                                                <input type="checkbox" checked={this.state.propose} tabIndex={tabIndex++} />
+                                                <label />
+                                            </div>
+                                        </div> */}
                                         </div>
                                     </div>
 

@@ -1,6 +1,5 @@
 import React from "react";
-import {Component} from "react";
-import PropTypes from "prop-types";
+import {PropTypes, Component} from "react";
 import ActionSheet from "react-foundation-apps/src/action-sheet";
 import ZfApi from "react-foundation-apps/src/utils/foundation-api";
 
@@ -91,7 +90,7 @@ class AutocompleteInput extends Component {
             let j = typeof i === "string" ? [i, i] : i;
             return (
                 <li key={j[0]}>
-                    <a data-value={j[0]} onClick={this.handleItemClick}>
+                    <a href data-value={j[0]} onClick={this.handleItemClick}>
                         {j[1]}
                     </a>
                 </li>
