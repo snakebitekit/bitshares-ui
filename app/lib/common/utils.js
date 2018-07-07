@@ -348,7 +348,7 @@ var Utils = {
 
         let eqValue =
             fromAsset.get("id") !== toAsset.get("id")
-                ? basePrecision * (amount / quotePrecision) / assetPrice
+                ? (basePrecision * (amount / quotePrecision)) / assetPrice
                 : amount;
 
         if (isNaN(eqValue) || !isFinite(eqValue)) {
@@ -392,7 +392,7 @@ var Utils = {
     },
 
     get_percentage(a, b) {
-        return Math.round(a / b * 100) + "%";
+        return Math.round((a / b) * 100) + "%";
     },
 
     replaceName(asset) {

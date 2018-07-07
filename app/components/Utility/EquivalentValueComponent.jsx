@@ -127,16 +127,19 @@ class EquivalentValueComponent extends React.Component {
     }
 }
 
-EquivalentValueComponent = connect(EquivalentValueComponent, {
-    listenTo() {
-        return [MarketsStore];
-    },
-    getProps() {
-        return {
-            marketStats: MarketsStore.getState().allMarketStats
-        };
+EquivalentValueComponent = connect(
+    EquivalentValueComponent,
+    {
+        listenTo() {
+            return [MarketsStore];
+        },
+        getProps() {
+            return {
+                marketStats: MarketsStore.getState().allMarketStats
+            };
+        }
     }
-});
+);
 
 class BalanceValueComponent extends React.Component {
     static propTypes = {

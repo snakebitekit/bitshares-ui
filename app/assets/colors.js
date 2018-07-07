@@ -7,8 +7,8 @@ module.exports = {
         callColor: "#BBBF2B",
         settleColor: "rgba(125, 134, 214, 1)",
         settleFillColor: "rgba(125, 134, 214, 0.5)",
-        positiveColor: "#6BA583",
-        negativeColor: "#DB0000",
+        positiveColor: "#00FF02",
+        negativeColor: "#DB0001",
         strokeColor: "#FFFF00",
         primaryText: "#e0e0e0",
         volumeColor: "#848484",
@@ -19,21 +19,19 @@ module.exports = {
         tooltipFillColor: "#fff",
         //axis
         axisLabelsColor: "#fff",
-        axisLineColor: "rgba(200, 200, 200, 0.3)",
-        indicatorLineColor: "#FFFFFF",
-        bgColor: "#191a1f",
-        textColor: "#e0e0e0"
+        axisLineColor: "#AAAAAA",
+        indicatorLineColor: "#FFFFFF"
     },
     darkTheme: {
-        bidColor: "#6BA583",
-        bidFillColor: "rgba(80, 210, 194, 0.5)",
-        askColor: "#E3745B",
-        askFillColor: "rgba(227, 116, 91, 0.5)",
+        bidColor: "#00FF02",
+        bidFillColor: "rgba(0, 255, 2, 0.3)",
+        askColor: "#DB0001",
+        askFillColor: "rgba(219, 0, 1, 0.3)",
         callColor: "#BBBF2B",
         settleColor: "rgba(125, 134, 214, 1)",
         settleFillColor: "rgba(125, 134, 214, 0.5)",
         positiveColor: "#258A14",
-        negativeColor: "#DB0000",
+        negativeColor: "#DB0001",
         strokeColor: "#FFFF00",
         primaryText: "#e0e0e0",
         volumeColor: "#848484",
@@ -44,10 +42,8 @@ module.exports = {
         tooltipFillColor: "#fff",
         //axis
         axisLabelsColor: "#fff",
-        axisLineColor: "rgba(200, 200, 200, 0.3)",
-        indicatorLineColor: "#FFFFFF",
-        bgColor: "#2a2a2a",
-        textColor: "#ffffff"
+        axisLineColor: "#AAAAAA",
+        indicatorLineColor: "#FFFFFF"
     },
     lightTheme: {
         bidColor: "#258A14",
@@ -69,9 +65,7 @@ module.exports = {
         tooltipFillColor: "#000",
         //axis
         axisLabelsColor: "#000",
-        axisLineColor: "rgba(200, 200, 200, 0.3)",
-        indicatorLineColor: "#848484",
-        bgColor: "#fff",
-        textColor: "#3d3d3d"
+        axisLineColor: "#000",
+        indicatorLineColor: "#848484"
     }
 };

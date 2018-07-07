@@ -1290,18 +1290,21 @@ class WithdrawModalNew extends React.Component {
     }
 }
 
-const ConnectedWithdrawModal = connect(WithdrawModalNew, {
-    listenTo() {
-        return [GatewayStore, AssetStore, SettingsStore, MarketsStore];
-    },
-    getProps() {
-        return {
-            backedCoins: GatewayStore.getState().backedCoins,
-            preferredCurrency: SettingsStore.getSetting("unit"),
-            marketStats: MarketsStore.getState().allMarketStats
-        };
+const ConnectedWithdrawModal = connect(
+    WithdrawModalNew,
+    {
+        listenTo() {
+            return [GatewayStore, AssetStore, SettingsStore, MarketsStore];
+        },
+        getProps() {
+            return {
+                backedCoins: GatewayStore.getState().backedCoins,
+                preferredCurrency: SettingsStore.getSetting("unit"),
+                marketStats: MarketsStore.getState().allMarketStats
+            };
+        }
     }
-});
+);
 
 class WithdrawModalWrapper extends React.Component {
     static propTypes = {
@@ -1351,16 +1354,19 @@ class WithdrawModalWrapper extends React.Component {
     }
 }
 
-const ConnectedWrapper = connect(BindToChainState(WithdrawModalWrapper), {
-    listenTo() {
-        return [AccountStore];
-    },
-    getProps() {
-        return {
-            account: AccountStore.getState().currentAccount
-        };
+const ConnectedWrapper = connect(
+    BindToChainState(WithdrawModalWrapper),
+    {
+        listenTo() {
+            return [AccountStore];
+        },
+        getProps() {
+            return {
+                account: AccountStore.getState().currentAccount
+            };
+        }
     }
-});
+);
 
 export default class WithdrawModal extends React.Component {
     constructor() {

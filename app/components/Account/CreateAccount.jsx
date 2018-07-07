@@ -546,7 +546,11 @@ class CreateAccount extends React.Component {
         let {step} = this.state;
 
         return (
-            <div className="sub-content" id="scrollToInput" name="scrollToInput">
+            <div
+                className="sub-content"
+                id="scrollToInput"
+                name="scrollToInput"
+            >
                 <div style={{maxWidth: "95vw"}}>
                     {step !== 1 ? (
                         <p
@@ -586,11 +590,14 @@ class CreateAccount extends React.Component {
 
 CreateAccount = withRouter(CreateAccount);
 
-export default connect(CreateAccount, {
-    listenTo() {
-        return [AccountStore];
-    },
-    getProps() {
-        return {};
+export default connect(
+    CreateAccount,
+    {
+        listenTo() {
+            return [AccountStore];
+        },
+        getProps() {
+            return {};
+        }
     }
-});
+);
