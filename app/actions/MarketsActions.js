@@ -21,7 +21,6 @@ let dispatchSubTimeout = null;
 let subBatchTime = 500;
 
 let currentMarket = null;
-let currentGroupLimit = "";
 
 function clearBatchTimeouts() {
     clearTimeout(dispatchCancelTimeout);
@@ -29,11 +28,6 @@ function clearBatchTimeouts() {
     dispatchCancelTimeout = null;
     dispatchSubTimeout = null;
 }
-
-const marketStatsQueue = []; // Queue array holding get_ticker promises
-const marketStatsQueueLength = 10; // Number of get_ticker calls per batch
-const marketStatsQueueTimeout = 1.5; // Seconds before triggering a queue processing
-let marketStatsQueueActive = false;
 
 class MarketsActions {
     changeBase(market) {
@@ -45,7 +39,7 @@ class MarketsActions {
         return size;
     }
 
-    getMarketStats(base, quote, refresh = false, errorCallback = null) {
+    getMarketStats(base, quote, refresh = false) {
         const {marketName, first, second} = marketUtils.getMarketName(
             base,
             quote
@@ -67,56 +61,20 @@ class MarketsActions {
                     lastFetched: new Date()
                 };
 
-                marketStatsQueue.push({
-                    promise: Apis.instance()
-                        .db_api()
-                        .exec("get_ticker", [
-                            second.get("id"),
-                            first.get("id")
-                        ]),
-                    market: marketName,
-                    base: second,
-                    quote: first
-                });
-
-                if (!marketStatsQueueActive) {
-                    marketStatsQueueActive = true;
-
-                    setTimeout(() => {
-                        processQueue();
-                    }, 1000 * marketStatsQueueTimeout); // 2 seconds between
-                }
-
-                let processQueue = () => {
-                    let currentBatch = marketStatsQueue.slice(
-                        0,
-                        marketStatsQueueLength
-                    );
-                    Promise.all(currentBatch.map(q => q.promise))
-                        .then(results => {
-                            dispatch({
-                                tickers: results,
-                                markets: currentBatch.map(q => q.market),
-                                bases: currentBatch.map(q => q.base),
-                                quotes: currentBatch.map(q => q.quote)
-                            });
-                            marketStatsQueue.splice(0, results.length);
-                            if (marketStatsQueue.length === 0) {
-                                marketStatsQueueActive = false;
-                            } else {
-                                return processQueue();
-                            }
-                        })
-                        .catch(err => {
-                            console.log(
-                                "getMarketStats error for " + marketName + ":",
-                                err
-                            );
-                            if (errorCallback != null) {
-                                errorCallback(err);
-                            }
+                Apis.instance()
+                    .db_api()
+                    .exec("get_ticker", [second.get("id"), first.get("id")])
+                    .then(result => {
+                        dispatch({
+                            ticker: result,
+                            market: marketName,
+                            base: second,
+                            quote: first
                         });
-                };
+                    })
+                    .catch(err => {
+                        console.log("getMarketStats error:", err);
+                    });
             }
         };
     }
@@ -125,7 +83,7 @@ class MarketsActions {
         return true;
     }
 
-    subscribeMarket(base, quote, bucketSize, groupedOrderLimit) {
+    subscribeMarket(base, quote, bucketSize) {
         clearBatchTimeouts();
         let subID = quote.get("id") + "_" + base.get("id");
         currentMarket = base.get("id") + "_" + quote.get("id");
@@ -198,29 +156,6 @@ class MarketsActions {
                                 .exec("get_settle_orders", [
                                     marketAsset.id,
                                     300
-                                ]);
-                        }
-
-                        let groupedOrdersBidsPromise = [];
-                        let groupedOrdersAsksPromise = [];
-                        if (currentGroupLimit !== 0) {
-                            groupedOrdersBidsPromise = Apis.instance()
-                                .orders_api()
-                                .exec("get_grouped_limit_orders", [
-                                    base.get("id"),
-                                    quote.get("id"),
-                                    currentGroupLimit, // group
-                                    null, // price start
-                                    100 // limit must not exceed 101
-                                ]);
-                            groupedOrdersAsksPromise = Apis.instance()
-                                .orders_api()
-                                .exec("get_grouped_limit_orders", [
-                                    quote.get("id"),
-                                    base.get("id"),
-                                    currentGroupLimit, // group
-                                    null, // price start
-                                    100 // limit must not exceed 101
                                 ]);
                         }
 
@@ -303,9 +238,7 @@ class MarketsActions {
                                 .exec("get_ticker", [
                                     base.get("id"),
                                     quote.get("id")
-                                ]),
-                            groupedOrdersBidsPromise,
-                            groupedOrdersAsksPromise
+                                ])
                         ])
                             .then(results => {
                                 const data1 = results[5] || [];
@@ -322,9 +255,7 @@ class MarketsActions {
                                     base: base,
                                     quote: quote,
                                     inverted: inverted,
-                                    ticker: results[7],
-                                    groupedOrdersBids: results[8],
-                                    groupedOrdersAsks: results[9]
+                                    ticker: results[7]
                                 });
                             })
                             .catch(error => {
@@ -339,14 +270,9 @@ class MarketsActions {
                 }
             };
 
-            if (
-                !subs[subID] ||
-                currentBucketSize !== bucketSize ||
-                currentGroupLimit !== groupedOrderLimit
-            ) {
+            if (!subs[subID] || currentBucketSize !== bucketSize) {
                 dispatch({switchMarket: true});
                 currentBucketSize = bucketSize;
-                currentGroupLimit = groupedOrderLimit;
                 let callPromise = null,
                     settlePromise = null;
 
@@ -357,29 +283,6 @@ class MarketsActions {
                     settlePromise = Apis.instance()
                         .db_api()
                         .exec("get_settle_orders", [marketAsset.id, 300]);
-                }
-
-                let groupedOrdersBidsPromise = [];
-                let groupedOrdersAsksPromise = [];
-                if (currentGroupLimit !== 0) {
-                    groupedOrdersBidsPromise = Apis.instance()
-                        .orders_api()
-                        .exec("get_grouped_limit_orders", [
-                            base.get("id"),
-                            quote.get("id"),
-                            currentGroupLimit, // group
-                            null, // price start
-                            100 // limit must not exceed 101
-                        ]);
-                    groupedOrdersAsksPromise = Apis.instance()
-                        .orders_api()
-                        .exec("get_grouped_limit_orders", [
-                            quote.get("id"),
-                            base.get("id"),
-                            currentGroupLimit, // group
-                            null, // price start
-                            100 // limit must not exceed 101
-                        ]);
                 }
 
                 let startDate = new Date();
@@ -397,7 +300,6 @@ class MarketsActions {
                 );
                 endDate.setDate(endDate.getDate() + 1);
                 if (__DEV__) console.time("Fetch market data");
-
                 return new Promise((resolve, reject) => {
                     Promise.all([
                         Apis.instance()
@@ -461,9 +363,7 @@ class MarketsActions {
                             .exec("get_ticker", [
                                 base.get("id"),
                                 quote.get("id")
-                            ]),
-                        groupedOrdersBidsPromise,
-                        groupedOrdersAsksPromise
+                            ])
                     ])
                         .then(results => {
                             const data1 = results[8] || [];
@@ -483,9 +383,7 @@ class MarketsActions {
                                 inverted: inverted,
                                 ticker: results[9],
                                 init: true,
-                                resolve,
-                                groupedOrdersBids: results[10],
-                                groupedOrdersAsks: results[11]
+                                resolve
                             });
                         })
                         .catch(error => {
@@ -760,61 +658,6 @@ class MarketsActions {
     toggleStars() {
         return true;
     }
-
-    getTrackedGroupsConfig() {
-        return dispatch => {
-            Apis.instance()
-                .orders_api()
-                .exec("get_tracked_groups", [])
-                .then(result => {
-                    dispatch({
-                        trackedGroupsConfig: result
-                    });
-                })
-                .catch(err => {
-                    console.log(
-                        "current node api does not support grouped orders."
-                    );
-                    dispatch({
-                        trackedGroupsConfig: []
-                    });
-                });
-        };
-    }
-
-    changeCurrentGroupLimit(groupLimit) {
-        return groupLimit;
-    }
 }
-let actions = alt.createActions(MarketsActions);
 
-// helper method, not actually dispatching anything
-let marketStatsIntervals = {};
-
-actions.clearMarketStatsInInterval = function(key) {
-    if (marketStatsIntervals[key]) {
-        clearInterval(marketStatsIntervals[key]);
-        delete marketStatsIntervals[key];
-    }
-};
-
-actions.getMarketStatsInterval = function(
-    intervalTime,
-    base,
-    quote,
-    refresh = false
-) {
-    actions.getMarketStats(base, quote, refresh);
-    const {marketName} = marketUtils.getMarketName(base, quote);
-    if (marketStatsIntervals[marketName]) {
-        return actions.clearMarketStatsInInterval.bind(this, marketName);
-    }
-    marketStatsIntervals[marketName] = setInterval(() => {
-        actions.getMarketStats(base, quote, refresh, () => {
-            actions.clearMarketStatsInInterval(base, quote);
-        });
-    }, intervalTime);
-    return actions.clearMarketStatsInInterval.bind(this, marketName);
-};
-
-export default actions;
+export default alt.createActions(MarketsActions);

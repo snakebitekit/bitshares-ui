@@ -240,9 +240,8 @@ class ImportKeys extends Component {
                                 filter_status[
                                     filter_status.length - 1
                                 ] = status;
-                            else
-                                // new account
-                                filter_status.push(status);
+                            // new account
+                            else filter_status.push(status);
                         }
                         update_state({genesis_filter_status: filter_status});
                     });
@@ -684,7 +683,7 @@ class ImportKeys extends Component {
                                     <span>
                                         Filtering{" "}
                                         {Math.round(
-                                            status.count / status.total * 100
+                                            (status.count / status.total) * 100
                                         )}{" "}
                                         %{" "}
                                     </span>
@@ -941,15 +940,18 @@ class ImportKeys extends Component {
     }
 }
 
-ImportKeys = connect(ImportKeys, {
-    listenTo() {
-        return [ImportKeysStore];
-    },
-    getProps() {
-        return {
-            importing: ImportKeysStore.getState().importing
-        };
+ImportKeys = connect(
+    ImportKeys,
+    {
+        listenTo() {
+            return [ImportKeysStore];
+        },
+        getProps() {
+            return {
+                importing: ImportKeysStore.getState().importing
+            };
+        }
     }
-});
+);
 
 export default ImportKeys;

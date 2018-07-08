@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import Translate from "react-translate-component";
 import LinkToAccountById from "../Utility/LinkToAccountById";
 import AssetWrapper from "../Utility/AssetWrapper";
@@ -1155,19 +1155,22 @@ class Asset extends React.Component {
     }
 }
 
-Asset = connect(Asset, {
-    listenTo() {
-        return [AccountStore];
-    },
-    getProps() {
-        const chainID = Apis.instance().chain_id;
-        return {
-            currentAccount:
-                AccountStore.getState().currentAccount ||
-                AccountStore.getState().passwordAccount
-        };
+Asset = connect(
+    Asset,
+    {
+        listenTo() {
+            return [AccountStore];
+        },
+        getProps() {
+            const chainID = Apis.instance().chain_id;
+            return {
+                currentAccount:
+                    AccountStore.getState().currentAccount ||
+                    AccountStore.getState().passwordAccount
+            };
+        }
     }
-});
+);
 
 Asset = AssetWrapper(Asset, {
     propNames: ["backingAsset"]
@@ -1194,7 +1197,7 @@ AssetContainer = AssetWrapper(AssetContainer, {
 
 export default class AssetSymbolSplitter extends React.Component {
     render() {
-        let symbol = this.props.match.params.symbol.toUpperCase();
+        let symbol = this.props.params.symbol.toUpperCase();
         return <AssetContainer {...this.props} asset={symbol} />;
     }
 }

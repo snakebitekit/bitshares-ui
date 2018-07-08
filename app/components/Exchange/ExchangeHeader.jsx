@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import Icon from "../Icon/Icon";
 import AssetName from "../Utility/AssetName";
 import MarketsActions from "actions/MarketsActions";
@@ -179,9 +179,7 @@ export default class ExchangeHeader extends React.Component {
                             {!hasPrediction ? (
                                 <div
                                     style={{
-                                        padding: "0 5px",
-                                        fontSize: "18px",
-                                        marginTop: "1px"
+                                        padding: "0 5px"
                                     }}
                                 >
                                     <span
@@ -253,7 +251,7 @@ export default class ExchangeHeader extends React.Component {
                                     />
                                 </Link>
 
-                                <a
+                                <Link
                                     onClick={() => {
                                         this._addMarket(
                                             this.props.quoteAsset.get("symbol"),
@@ -269,7 +267,7 @@ export default class ExchangeHeader extends React.Component {
                                         name="fi-star"
                                         title="icons.fi_star.market"
                                     />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -299,11 +297,11 @@ export default class ExchangeHeader extends React.Component {
                                     }
                                 >
                                     <span>
-                                        <b className="value">
+                                        <span className="value">
                                             {marketReady
                                                 ? dayChangeWithSign
                                                 : 0}
-                                        </b>
+                                        </span>
                                         <span> %</span>
                                     </span>
                                     <Translate
@@ -445,14 +443,10 @@ export default class ExchangeHeader extends React.Component {
                                     }}
                                 >
                                     <option value="market_depth">
-                                        {counterpart.translate(
-                                            "exchange.order_depth"
-                                        )}
+                                        <Translate content="exchange.order_depth" />
                                     </option>
                                     <option value="price_chart">
-                                        {counterpart.translate(
-                                            "exchange.price_history"
-                                        )}
+                                        <Translate content="exchange.price_history" />
                                     </option>
                                 </select>
                             </li>

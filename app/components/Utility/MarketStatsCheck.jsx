@@ -75,11 +75,6 @@ class MarketStatsCheck extends React.Component {
     }
 
     _startUpdates(props) {
-        /* Only run this every x seconds */
-        if (!!this.updatesTimer) return;
-        this.updatesTimer = setTimeout(() => {
-            this.updatesTimer = null;
-        }, 10 * 1000);
         let {coreAsset, fromAssets, fromAsset, toAsset} = props;
         if (!fromAssets && fromAsset) fromAssets = [fromAsset];
 
@@ -98,20 +93,22 @@ class MarketStatsCheck extends React.Component {
                 if (useDirectMarket && toAsset.get("id") !== asset.get("id")) {
                     if (!this.directStatsIntervals[directMarket]) {
                         setTimeout(() => {
+                            MarketsActions.getMarketStats(asset, toAsset);
                             this.directStatsIntervals[
                                 directMarket
-                            ] = MarketsActions.getMarketStatsInterval(
-                                5 * 60 * 1000,
-                                asset,
-                                toAsset
+                            ] = setInterval(
+                                MarketsActions.getMarketStats.bind(
+                                    this,
+                                    asset,
+                                    toAsset
+                                ),
+                                5 * 60 * 1000
                             );
                         }, 50);
                     }
+                } else if (this.directStatsIntervals[directMarket]) {
+                    clearInterval(this.directStatsIntervals[directMarket]);
                 }
-                // else if (this.directStatsIntervals[directMarket]) {
-                //     console.log(directMarket, "directStatsIntervals exists, clearing");
-                //     this.directStatsIntervals[directMarket]();
-                // }
 
                 return useDirectMarket ? directMarket : null;
             })
@@ -135,13 +132,16 @@ class MarketStatsCheck extends React.Component {
                         asset
                     );
                     if (!this.fromStatsIntervals[marketName]) {
+                        this.fromStatsIntervals[marketName] = true;
                         setTimeout(() => {
-                            this.fromStatsIntervals[
-                                marketName
-                            ] = MarketsActions.getMarketStatsInterval(
-                                5 * 60 * 1000,
-                                coreAsset,
-                                asset
+                            MarketsActions.getMarketStats(coreAsset, asset);
+                            this.fromStatsIntervals[marketName] = setInterval(
+                                MarketsActions.getMarketStats.bind(
+                                    this,
+                                    coreAsset,
+                                    asset
+                                ),
+                                5 * 60 * 1000
                             );
                         }, 50);
                     }
@@ -151,25 +151,29 @@ class MarketStatsCheck extends React.Component {
             // To asset
             if (props.toAsset.get("id") !== coreAsset.get("id")) {
                 // wrap this in a timeout to prevent dispatch in the middle of a dispatch
-                this.toStatsInterval = MarketsActions.getMarketStatsInterval(
-                    5 * 60 * 1000,
-                    coreAsset,
-                    props.toAsset
-                );
+                MarketsActions.getMarketStats(coreAsset, props.toAsset);
+                this.toStatsInterval = setInterval(() => {
+                    MarketsActions.getMarketStats(coreAsset, props.toAsset);
+                }, 5 * 60 * 1000);
             }
         }
     }
 
+    _stopUpdate(marketName) {
+        clearInterval(this.fromStatsIntervals[marketName]);
+        delete this.fromStatsIntervals[marketName];
+    }
+
     _stopUpdates() {
         for (let key in this.fromStatsIntervals) {
-            this.fromStatsIntervals[key]();
+            clearInterval(this.fromStatsIntervals[key]);
             delete this.fromStatsIntervals[key];
         }
         for (let key in this.directStatsIntervals) {
-            this.directStatsIntervals[key]();
+            clearInterval(this.directStatsIntervals[key]);
             delete this.directStatsIntervals[key];
         }
-        if (this.toStatsInterval) this.toStatsInterval();
+        clearInterval(this.toStatsInterval);
         this.toStatsInterval = null;
     }
 

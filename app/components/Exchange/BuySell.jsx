@@ -137,15 +137,15 @@ class BuySell extends React.Component {
             ? 0
             : Math.min(
                   maxQuoteMarketFee.getAmount({real: true}),
-                  amount *
-                      quote.getIn(["options", "market_fee_percent"]) /
+                  (amount * quote.getIn(["options", "market_fee_percent"])) /
                       10000
               ).toFixed(maxQuoteMarketFee.precision);
         const baseFee = !amount
             ? 0
             : Math.min(
                   maxBaseMarketFee.getAmount({real: true}),
-                  total * base.getIn(["options", "market_fee_percent"]) / 10000
+                  (total * base.getIn(["options", "market_fee_percent"])) /
+                      10000
               ).toFixed(maxBaseMarketFee.precision);
         const baseFlagBooleans = assetUtils.getFlagBooleans(
             base.getIn(["options", "flags"]),
@@ -537,7 +537,7 @@ class BuySell extends React.Component {
                                         dataPlace="right"
                                         name={base.get("symbol")}
                                     />
-                                    &nbsp;/&nbsp;
+                                    /
                                     <AssetName
                                         dataPlace="right"
                                         name={quote.get("symbol")}
@@ -652,8 +652,7 @@ class BuySell extends React.Component {
                                             </td>
                                             <td
                                                 style={{
-                                                    paddingLeft: 5,
-                                                    textAlign: "right"
+                                                    paddingLeft: 5
                                                 }}
                                             >
                                                 <span
@@ -681,7 +680,7 @@ class BuySell extends React.Component {
                                         </tr>
 
                                         <tr className="buy-sell-info">
-                                            <td style={{paddingTop: 5}}>
+                                            <td style={{paddingTop: 10}}>
                                                 {isBid ? (
                                                     <Translate content="exchange.lowest_ask" />
                                                 ) : (
@@ -692,8 +691,7 @@ class BuySell extends React.Component {
                                                 <td
                                                     style={{
                                                         paddingLeft: 5,
-                                                        textAlign: "right",
-                                                        paddingTop: 5,
+                                                        paddingTop: 10,
                                                         verticalAlign: "bottom"
                                                     }}
                                                 >

@@ -9,7 +9,7 @@ import cnames from "classnames";
 import {Tabs, Tab} from "../Utility/Tabs";
 import BindToChainState from "../Utility/BindToChainState";
 import ChainTypes from "../Utility/ChainTypes";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import ApplicationApi from "api/ApplicationApi";
 import AccountSelector from "./AccountSelector";
 import Icon from "../Icon/Icon";
@@ -678,14 +678,15 @@ class AccountVoting extends React.Component {
 
         let proxyInput = (
             <AccountSelector
-                style={{width: "50%", maxWidth: 250, marginBottom: 10}}
+                hideImage
+                style={{width: "50%", maxWidth: 350}}
                 account={this.state.current_proxy_input}
                 accountName={this.state.current_proxy_input}
                 onChange={this.onProxyChange.bind(this)}
                 onAccountChanged={this.onProxyAccountFound}
+                typeahead={true}
                 tabIndex={1}
                 placeholder="Proxy not set"
-                hideImage
             >
                 <span
                     style={{

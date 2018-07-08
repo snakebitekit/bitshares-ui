@@ -15,9 +15,10 @@ import counterpart from "counterpart";
 import Icon from "../Icon/Icon";
 import TotalBalanceValue from "../Utility/TotalBalanceValue";
 import {List} from "immutable";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import TranslateWithLinks from "../Utility/TranslateWithLinks";
 import Immutable from "immutable";
+import PropTypes from "prop-types";
 
 const alignRight = {textAlign: "right"};
 const alignLeft = {textAlign: "left"};
@@ -38,6 +39,10 @@ class MarginPosition extends React.Component {
 
     static defaultProps = {
         tempComponent: "tr"
+    };
+
+    static contextTypes = {
+        router: PropTypes.object
     };
 
     _onUpdatePosition(e) {
@@ -192,6 +197,11 @@ class MarginPosition extends React.Component {
         }
     }
 
+    _onNavigate(route, e) {
+        e.preventDefault();
+        this.context.router.push(route);
+    }
+
     render() {
         let {debtAsset, collateralAsset, object} = this.props;
         const co = object.toJS();
@@ -200,6 +210,32 @@ class MarginPosition extends React.Component {
         const balance = this._getBalance();
 
         const statusClass = this._getStatusClass();
+
+        const assetDetailURL = `/asset/${debtAsset.get("symbol")}`;
+        const marketURL = `/market/${debtAsset.get(
+            "symbol"
+        )}_${collateralAsset.get("symbol")}`;
+        const assetInfoLinks = (
+            <ul>
+                <li>
+                    <a
+                        href={assetDetailURL}
+                        onClick={this._onNavigate.bind(this, assetDetailURL)}
+                    >
+                        <Translate content="account.asset_details" />
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href={marketURL}
+                        onClick={this._onNavigate.bind(this, marketURL)}
+                    >
+                        <AssetName name={debtAsset.get("symbol")} /> :{" "}
+                        <AssetName name={collateralAsset.get("symbol")} />
+                    </a>
+                </li>
+            </ul>
+        );
 
         return (
             <tr className="margin-row">
@@ -212,6 +248,7 @@ class MarginPosition extends React.Component {
                     <FormattedAsset
                         amount={balance}
                         asset={co.call_price.quote.asset_id}
+                        assetInfo={assetInfoLinks}
                         hide_asset
                     />
                 </td>
@@ -219,6 +256,7 @@ class MarginPosition extends React.Component {
                     <FormattedAsset
                         amount={co.debt}
                         asset={co.call_price.quote.asset_id}
+                        assetInfo={assetInfoLinks}
                         hide_asset
                     />
                 </td>
@@ -381,6 +419,10 @@ class MarginPositionPlaceHolder extends React.Component {
         tempComponent: "tr"
     };
 
+    static contextTypes = {
+        router: PropTypes.object
+    };
+
     _onUpdatePosition(e) {
         e.preventDefault();
         let ref = "cp_modal_" + this.props.debtAsset.get("id");
@@ -415,6 +457,11 @@ class MarginPositionPlaceHolder extends React.Component {
         );
     }
 
+    _onNavigate(route, e) {
+        e.preventDefault();
+        this.context.router.push(route);
+    }
+
     render() {
         let {debtAsset, collateralAsset, account} = this.props;
 
@@ -443,6 +490,32 @@ class MarginPositionPlaceHolder extends React.Component {
             });
         }
 
+        const assetDetailURL = `/asset/${debtAsset.get("symbol")}`;
+        const marketURL = `/market/${debtAsset.get(
+            "symbol"
+        )}_${collateralAsset.get("symbol")}`;
+        const assetInfoLinks = (
+            <ul>
+                <li>
+                    <a
+                        href={assetDetailURL}
+                        onClick={this._onNavigate.bind(this, assetDetailURL)}
+                    >
+                        <Translate content="account.asset_details" />
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href={marketURL}
+                        onClick={this._onNavigate.bind(this, marketURL)}
+                    >
+                        <AssetName name={debtAsset.get("symbol")} /> :{" "}
+                        <AssetName name={collateralAsset.get("symbol")} />
+                    </a>
+                </li>
+            </ul>
+        );
+
         return (
             <tr className="margin-row">
                 <td style={alignLeft}>
@@ -454,6 +527,7 @@ class MarginPositionPlaceHolder extends React.Component {
                     <FormattedAsset
                         amount={balance}
                         asset={debtAsset.get("id")}
+                        assetInfo={assetInfoLinks}
                         hide_asset
                     />
                 </td>
@@ -461,6 +535,7 @@ class MarginPositionPlaceHolder extends React.Component {
                     <FormattedAsset
                         amount={0}
                         asset={debtAsset.get("id")}
+                        assetInfo={assetInfoLinks}
                         hide_asset
                     />
                 </td>

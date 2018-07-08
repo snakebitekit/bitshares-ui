@@ -1,8 +1,8 @@
 {
     "presets": [
-        ["env", { "modules": false }],
-        "react",
-        "stage-0"
+        ["es2015", { "modules": false }],
+        "stage-0",
+        "react"
     ],
     "plugins": [
       "react-hot-loader/babel",
@@ -10,7 +10,7 @@
     ],
     "env": {
         "test": {
-            "presets": ["env","react", "stage-0"],
+            "presets": ["es2015", "stage-0","react"],
             "plugins": [
                 [ "babel-plugin-webpack-alias", { "config": "./conf/webpack.config.js" } ]
             ]

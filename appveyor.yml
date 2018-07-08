@@ -10,6 +10,8 @@ install:
 build: off
 platform:
   - x64
+cache:
+  - node_modules -> appveyor.yml&
 before_package:
   echo Before package
 after_test:

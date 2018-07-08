@@ -1,10 +1,11 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import AccountSelector from "./AccountSelector";
 import BindToChainState from "../Utility/BindToChainState";
 import ChainTypes from "../Utility/ChainTypes";
 import Translate from "react-translate-component";
 import AccountImage from "../Account/AccountImage";
+import LinkToAccountById from "../Utility/LinkToAccountById";
 import {List} from "immutable";
 
 class AccountVotingProxy extends React.Component {
@@ -33,6 +34,10 @@ class AccountVotingProxy extends React.Component {
         ]),
         existingProxy: "1.2.5", // proxy-to-self
         autosubscribe: false
+    };
+
+    static contextTypes = {
+        router: PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -126,6 +131,11 @@ class AccountVotingProxy extends React.Component {
                 this.props.onProxyAccountChanged(new_proxy_account);
             }
         });
+    }
+
+    _onNavigate(route) {
+        this.context.router.push(route);
+        // this._changeTab();
     }
 
     // _changeTab() {

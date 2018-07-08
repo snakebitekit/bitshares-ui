@@ -16,7 +16,6 @@ import AccountStore from "stores/AccountStore";
 import counterpart from "counterpart";
 import WalletDb from "stores/WalletDb";
 import PropTypes from "prop-types";
-import {withRouter} from "react-router-dom";
 
 const starSort = function(a, b, inverse, starredAccounts) {
     let aName = a.get("name");
@@ -40,6 +39,10 @@ const starSort = function(a, b, inverse, starredAccounts) {
 };
 
 class DashboardList extends React.Component {
+    static contextTypes = {
+        router: PropTypes.object.isRequired
+    };
+
     static propTypes = {
         accounts: ChainTypes.ChainAccountsList.isRequired,
         ignoredAccounts: ChainTypes.ChainAccountsList
@@ -91,14 +94,14 @@ class DashboardList extends React.Component {
     }
 
     _goAccount(name, tab) {
-        this.props.history.push(`/account/${name}`);
+        this.context.router.push(`/account/${name}`);
         SettingsActions.changeViewSetting({
             overviewTab: tab
         });
     }
 
     _createAccount() {
-        this.props.history.push("/create-account/wallet");
+        this.context.router.push("/create-account/wallet");
     }
 
     _onFilter(e) {
@@ -563,17 +566,19 @@ class AccountsListWrapper extends React.Component {
         return <DashboardList {...this.props} />;
     }
 }
-AccountsListWrapper = withRouter(AccountsListWrapper);
 
-export default connect(AccountsListWrapper, {
-    listenTo() {
-        return [SettingsStore, WalletUnlockStore, AccountStore];
-    },
-    getProps() {
-        return {
-            locked: WalletUnlockStore.getState().locked,
-            starredAccounts: AccountStore.getState().starredAccounts,
-            viewSettings: SettingsStore.getState().viewSettings
-        };
+export default connect(
+    AccountsListWrapper,
+    {
+        listenTo() {
+            return [SettingsStore, WalletUnlockStore, AccountStore];
+        },
+        getProps() {
+            return {
+                locked: WalletUnlockStore.getState().locked,
+                starredAccounts: AccountStore.getState().starredAccounts,
+                viewSettings: SettingsStore.getState().viewSettings
+            };
+        }
     }
-});
+);

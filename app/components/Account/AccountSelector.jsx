@@ -61,7 +61,7 @@ class AccountSelector extends React.Component {
         if (this.props.onAccountChanged && account)
             this.props.onAccountChanged(account);
 
-        if (!this.props.typeahead && accountName)
+        if (!this.props.typeahead && !!accountName)
             this.onInputChanged(accountName);
     }
 
@@ -119,7 +119,7 @@ class AccountSelector extends React.Component {
         // - Always returns account object
         if (!typeahead) {
             if (onChange) onChange(_accountName);
-            if (onAccountChanged && _account) onAccountChanged(_account);
+            if (onAccountChanged) onAccountChanged(_account);
         }
     }
 
@@ -138,7 +138,9 @@ class AccountSelector extends React.Component {
         if (!allowUppercase) value = value.toLowerCase();
 
         // If regex matches ^.*#/account/account-name/.*$, parse out account-name
-        let _value = value.replace("#", "").match(/(?:\/account\/)(.*)/);
+        let _value = value
+            .replace("#", "")
+            .match(/(?:\/account\/)(.*)(?:\/overview)/);
         if (_value) value = _value[1];
 
         return value;
@@ -428,7 +430,6 @@ class AccountSelector extends React.Component {
                                     }}
                                     name="username"
                                     id="username"
-                                    autoComplete="username"
                                     type="text"
                                     value={this.props.accountName || ""}
                                     placeholder={
@@ -494,16 +495,19 @@ class AccountSelector extends React.Component {
 
 AccountSelector = BindToChainState(AccountSelector);
 
-AccountSelector = connect(AccountSelector, {
-    listenTo() {
-        return [AccountStore];
-    },
-    getProps() {
-        return {
-            myActiveAccounts: AccountStore.getState().myActiveAccounts,
-            contacts: AccountStore.getState().accountContacts
-        };
+AccountSelector = connect(
+    AccountSelector,
+    {
+        listenTo() {
+            return [AccountStore];
+        },
+        getProps() {
+            return {
+                myActiveAccounts: AccountStore.getState().myActiveAccounts,
+                contacts: AccountStore.getState().accountContacts
+            };
+        }
     }
-});
+);
 
 export default AccountSelector;

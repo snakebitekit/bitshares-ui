@@ -26,7 +26,6 @@ import AssetFeedProducers from "./AssetFeedProducers";
 import BaseModal from "components/Modal/BaseModal";
 import ZfApi from "react-foundation-apps/src/utils/foundation-api";
 import FundFeePool from "./FundFeePool";
-import {withRouter} from "react-router-dom";
 
 let GRAPHENE_MAX_SHARE_SUPPLY = new big(
     assetConstants.GRAPHENE_MAX_SHARE_SUPPLY
@@ -1751,9 +1750,9 @@ class ConfirmModal extends React.Component {
 
 class AssetUpdateWrapper extends React.Component {
     render() {
-        let asset = this.props.match.params.asset;
+        let asset = this.props.params.asset;
         return <AccountAssetUpdate asset={asset} {...this.props} />;
     }
 }
 
-export default withRouter(AssetUpdateWrapper);
+export default AssetUpdateWrapper;

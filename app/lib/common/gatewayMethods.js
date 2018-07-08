@@ -276,6 +276,11 @@ export function requestDepositAddress({
     url = openledgerAPIs.BASE,
     stateCallback
 }) {
+    if (
+        inputCoinType.toLowerCase() === "monero" &&
+        outputCoinType.toLowerCase() === "citadel.monero"
+    )
+        inputCoinType = "xmr";
     let body = {
         inputCoinType,
         outputCoinType,

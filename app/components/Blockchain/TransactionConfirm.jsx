@@ -297,7 +297,7 @@ class TransactionConfirm extends React.Component {
 
                             {/* P R O P O S E   T O G G L E */}
                             {!this.props.transaction.has_proposed_operation() &&
-                            !(broadcast || broadcasting || this.props.error) ? (
+                            !(broadcast || broadcasting) ? (
                                 <div className="align-right grid-block">
                                     <label
                                         style={{
@@ -327,13 +327,16 @@ class TransactionConfirm extends React.Component {
     }
 }
 
-TransactionConfirm = connect(TransactionConfirm, {
-    listenTo() {
-        return [TransactionConfirmStore];
-    },
-    getProps() {
-        return TransactionConfirmStore.getState();
+TransactionConfirm = connect(
+    TransactionConfirm,
+    {
+        listenTo() {
+            return [TransactionConfirmStore];
+        },
+        getProps() {
+            return TransactionConfirmStore.getState();
+        }
     }
-});
+);
 
 export default TransactionConfirm;

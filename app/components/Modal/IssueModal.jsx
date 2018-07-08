@@ -4,10 +4,9 @@ import ChainTypes from "../Utility/ChainTypes";
 import BindToChainState from "../Utility/BindToChainState";
 import utils from "common/utils";
 import counterpart from "counterpart";
-import ApplicationApi from "api/ApplicationApi";
+import AssetActions from "actions/AssetActions";
 import AccountSelector from "../Account/AccountSelector";
 import AmountSelector from "../Utility/AmountSelector";
-import notify from "actions/NotificationActions";
 
 class IssueModal extends React.Component {
     static propTypes = {
@@ -47,7 +46,7 @@ class IssueModal extends React.Component {
         let amount = this.state.amount.toString().replace(/,/g, "");
         amount *= precision;
 
-        ApplicationApi.issue_asset(
+        AssetActions.issueAsset(
             this.state.to_id,
             asset_to_issue.get("issuer"),
             asset_to_issue.get("id"),
@@ -55,14 +54,7 @@ class IssueModal extends React.Component {
             this.state.memo
                 ? new Buffer(this.state.memo, "utf-8")
                 : this.state.memo
-        ).catch(err => {
-            console.log("issue error caught here:", err);
-            notify.addNotification({
-                message: `Failed to issue the asset, probably due to an invalid amount being issued`, //: ${this.state.wallet_public_name}
-                level: "error",
-                autoDismiss: 10
-            });
-        });
+        );
 
         this.setState({
             amount: 0,

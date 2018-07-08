@@ -33,9 +33,13 @@ import {
     KeyFileLabel
 } from "./WalletUnlockModalLib";
 import {backupName} from "common/backupUtils";
-import {withRouter} from "react-router-dom";
+import PropTypes from "prop-types";
 
 class WalletUnlockModal extends React.Component {
+    static contextTypes = {
+        router: PropTypes.object
+    };
+
     constructor(props) {
         super(props);
         this.state = this.initialState(props);
@@ -75,7 +79,6 @@ class WalletUnlockModal extends React.Component {
     }
 
     shouldComponentUpdate(np, ns) {
-        if (this.state.isOpen && !ns.isOpen) return false;
         return (
             !utils.are_equal_shallow(np, this.props) ||
             !utils.are_equal_shallow(ns, this.state)
@@ -245,7 +248,7 @@ class WalletUnlockModal extends React.Component {
 
     closeRedirect = path => {
         WalletUnlockActions.cancel();
-        this.props.history.push(path);
+        this.context.router.push(path);
     };
 
     handleCreateWallet = () => this.closeRedirect("/create-account/wallet");
@@ -340,7 +343,8 @@ class WalletUnlockModal extends React.Component {
             passwordLogin,
             modalId,
             currentWallet,
-            walletNames
+            walletNames,
+            dbWallet
         } = this.props;
         const {
             walletSelected,
@@ -348,8 +352,7 @@ class WalletUnlockModal extends React.Component {
             passwordError,
             customError,
             accountName,
-            stopAskingForBackup,
-            isOpen
+            stopAskingForBackup
         } = this.state;
 
         const noWalletNames = !(walletNames.size > 0);
@@ -371,115 +374,106 @@ class WalletUnlockModal extends React.Component {
                 modalHeader="header.unlock_short"
                 leftHeader
             >
-                {!isOpen ? null : (
-                    <form onSubmit={this.handleLogin} className="full-width">
-                        <LoginTypeSelector />
-                        {passwordLogin ? (
-                            <div>
-                                <DisableChromeAutocomplete />
-                                <AccountSelector
-                                    label="account.name"
-                                    ref="account_input"
-                                    accountName={accountName}
-                                    account={accountName}
-                                    onChange={this.handleAccountNameChange}
-                                    onAccountChanged={() => {}}
-                                    size={60}
-                                    hideImage
-                                    placeholder=" "
-                                    useHR
-                                    labelClass="login-label"
-                                    reserveErrorSpace
-                                />
-                                <CustomPasswordInput
-                                    password_error={passwordError}
-                                    ref="custom_password_input"
-                                />
-                            </div>
-                        ) : (
-                            <div>
-                                <div
-                                    className={
-                                        "key-file-selector " +
-                                        (restoringBackup && !walletSelected
-                                            ? "restoring"
-                                            : "")
+                <form onSubmit={this.handleLogin} className="full-width">
+                    <LoginTypeSelector />
+                    {passwordLogin ? (
+                        <div>
+                            <DisableChromeAutocomplete />
+                            <AccountSelector
+                                label="account.name"
+                                ref="account_input"
+                                accountName={accountName}
+                                account={accountName}
+                                onChange={this.handleAccountNameChange}
+                                onAccountChanged={() => {}}
+                                size={60}
+                                hideImage
+                                placeholder=" "
+                                useHR
+                                labelClass="login-label"
+                                reserveErrorSpace
+                            />
+                            <CustomPasswordInput
+                                password_error={passwordError}
+                                ref="custom_password_input"
+                            />
+                        </div>
+                    ) : (
+                        <div>
+                            <div
+                                className={
+                                    "key-file-selector " +
+                                    (restoringBackup && !walletSelected
+                                        ? "restoring"
+                                        : "")
+                                }
+                            >
+                                <KeyFileLabel
+                                    showUseOtherWalletLink={
+                                        restoringBackup && !backup.name
                                     }
-                                >
-                                    <KeyFileLabel
-                                        showUseOtherWalletLink={
-                                            restoringBackup && !backup.name
-                                        }
+                                    onUseOtherWallet={this.handleUseOtherWallet}
+                                />
+                                <hr />
+                                {walletSelected ? (
+                                    <WalletDisplay
+                                        name={walletDisplayName}
                                         onUseOtherWallet={
                                             this.handleUseOtherWallet
                                         }
                                     />
-                                    <hr />
-                                    {walletSelected ? (
-                                        <WalletDisplay
-                                            name={walletDisplayName}
-                                            onUseOtherWallet={
-                                                this.handleUseOtherWallet
-                                            }
-                                        />
-                                    ) : (
-                                        <div>
-                                            {restoringBackup ||
-                                            noWalletNames ? (
-                                                <BackupFileSelector
-                                                    onFileChosen={
-                                                        this.loadBackup
-                                                    }
-                                                    onRestoreOther={
-                                                        this.handleRestoreOther
-                                                    }
-                                                />
-                                            ) : (
-                                                <WalletSelector
-                                                    onFileChosen={
-                                                        this.loadBackup
-                                                    }
-                                                    restoringBackup={
-                                                        restoringBackup
-                                                    }
-                                                    walletNames={walletNames}
-                                                    onWalletChange={
-                                                        this
-                                                            .handleSelectedWalletChange
-                                                    }
-                                                />
-                                            )}
-                                            {noLocalWallet && (
-                                                <CreateLocalWalletLink
-                                                    onCreate={
-                                                        this.handleCreateWallet
-                                                    }
-                                                />
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                                <PasswordInput
-                                    ref="password_input"
-                                    onEnter={this.handleLogin}
-                                    noValidation
-                                    labelClass="login-label"
-                                />
+                                ) : (
+                                    <div>
+                                        {restoringBackup || noWalletNames ? (
+                                            <BackupFileSelector
+                                                onFileChosen={this.loadBackup}
+                                                onRestoreOther={
+                                                    this.handleRestoreOther
+                                                }
+                                            />
+                                        ) : (
+                                            <WalletSelector
+                                                onFileChosen={this.loadBackup}
+                                                restoringBackup={
+                                                    restoringBackup
+                                                }
+                                                walletNames={walletNames}
+                                                onWalletChange={
+                                                    this
+                                                        .handleSelectedWalletChange
+                                                }
+                                            />
+                                        )}
+                                        {noLocalWallet && (
+                                            <CreateLocalWalletLink
+                                                onCreate={
+                                                    this.handleCreateWallet
+                                                }
+                                            />
+                                        )}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        <CustomError message={errorMessage} />
-                        {this.shouldShowBackupWarning() && (
-                            <BackupWarning
-                                onChange={this.handleAskForBackupChange}
-                                checked={stopAskingForBackup}
+                            <PasswordInput
+                                ref="password_input"
+                                onEnter={this.handleLogin}
+                                noValidation
+                                labelClass="login-label"
                             />
-                        )}
-                        <LoginButtons
-                            onLogin={this.handleLogin}
-                            backupLogin={this.shouldUseBackupLogin()}
+                        </div>
+                    )}
+                    <CustomError message={errorMessage} />
+                    {this.shouldShowBackupWarning() && (
+                        <BackupWarning
+                            onChange={this.handleAskForBackupChange}
+                            checked={stopAskingForBackup}
                         />
-                    </form>
-                )}
+                    )}
+                    <LoginButtons
+                        onLogin={this.handleLogin}
+                        backupLogin={this.shouldUseBackupLogin()}
+                    />
+                </form>
             </BaseModal>
         );
     }
@@ -488,8 +482,6 @@ class WalletUnlockModal extends React.Component {
 WalletUnlockModal.defaultProps = {
     modalId: "unlock_wallet_modal2"
 };
-
-WalletUnlockModal = withRouter(WalletUnlockModal);
 
 class WalletUnlockModalContainer extends React.Component {
     render() {

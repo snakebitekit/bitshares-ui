@@ -1,20 +1,20 @@
 var path = require("path");
 var webpack = require("webpack");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var Clean = require("clean-webpack-plugin");
 var git = require("git-rev-sync");
 require("es6-promise").polyfill();
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 var locales = require("./app/assets/locales");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 /*
 * For staging builds, set the version to the latest commit hash, for
 * production set it to the package version
 */
-let branch = !!process.env.BRANCH ? process.env.BRANCH : git.branch();
 var __VERSION__ =
-    branch === "develop" ? git.short() : require("./package.json").version;
+    git.branch() === "staging"
+        ? git.short()
+        : require("./package.json").version;
 
 // BASE APP DIR
 var root_dir = path.resolve(__dirname);
@@ -68,15 +68,7 @@ module.exports = function(env) {
     const localeRegex = new RegExp(regexString);
 
     var plugins = [
-        new HtmlWebpackPlugin({
-            template: "!!handlebars-loader!app/assets/index.hbs",
-            templateParameters: {
-                title: "BitShares " + __VERSION__,
-                INCLUDE_BASE: !!env.prod && !env.hash,
-                PRODUCTION: !!env.prod,
-                ELECTRON: !!env.electron
-            }
-        }),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.DefinePlugin({
             APP_VERSION: JSON.stringify(__VERSION__),
             __ELECTRON__: !!env.electron,
@@ -87,6 +79,7 @@ module.exports = function(env) {
             ),
             __TESTNET__: !!env.testnet,
             __DEPRECATED__: !!env.deprecated,
+            __ONION__: !!env.onion,
             DEFAULT_SYMBOL: "BTS",
             __GIT_BRANCH__: JSON.stringify(git.branch())
         }),
@@ -109,40 +102,40 @@ module.exports = function(env) {
         // PROD OUTPUT PATH
         let outputDir = env.electron
             ? "electron"
-            : env.hash
-                ? !baseUrl
-                    ? "hash-history"
-                    : `hash-history_${baseUrl.replace("/", "")}`
-                : "dist";
+            : env.citadel
+                ? "citadel"
+                : env.hash
+                    ? `hash-history_${baseUrl.replace("/", "")}`
+                    : "dist";
+        if (env.onion) {
+            outputDir += "_onion";
+        }
         outputPath = path.join(root_dir, "build", outputDir);
 
         // DIRECTORY CLEANER
         var cleanDirectories = [outputPath];
 
         // WRAP INTO CSS FILE
-        cssLoaders = [
-            {loader: MiniCssExtractPlugin.loader},
-            {loader: "css-loader"},
-            {
-                loader: "postcss-loader",
-                options: {
-                    minimize: true,
-                    debug: false
+        const extractCSS = new ExtractTextPlugin("app.css");
+        cssLoaders = ExtractTextPlugin.extract({
+            fallback: "style-loader",
+            use: [
+                {loader: "css-loader"},
+                {
+                    loader: "postcss-loader"
                 }
-            }
-        ];
-        scssLoaders = [
-            {loader: MiniCssExtractPlugin.loader},
-            {loader: "css-loader"},
-            {
-                loader: "postcss-loader",
-                options: {
-                    minimize: true,
-                    debug: false
-                }
-            },
-            {loader: "sass-loader", options: {outputStyle: "expanded"}}
-        ];
+            ]
+        });
+        scssLoaders = ExtractTextPlugin.extract({
+            fallback: "style-loader",
+            use: [
+                {loader: "css-loader"},
+                {
+                    loader: "postcss-loader"
+                },
+                {loader: "sass-loader", options: {outputStyle: "expanded"}}
+            ]
+        });
 
         // PROD PLUGINS
         plugins.push(new Clean(cleanDirectories, {root: root_dir}));
@@ -151,12 +144,15 @@ module.exports = function(env) {
                 __DEV__: false
             })
         );
+        plugins.push(extractCSS);
         plugins.push(
-            new MiniCssExtractPlugin({
-                filename: "[name].[contenthash].css"
+            new webpack.LoaderOptionsPlugin({
+                minimize: true,
+                debug: false
             })
         );
     } else {
+        // plugins.push(new webpack.optimize.OccurenceOrderPlugin());
         plugins.push(
             new webpack.DefinePlugin({
                 "process.env": {NODE_ENV: JSON.stringify("development")},
@@ -204,36 +200,17 @@ module.exports = function(env) {
                 : [
                       "webpack-hot-middleware/client",
                       "react-hot-loader/patch",
-                      path.resolve(root_dir, "app/Main.js")
+                      path.resolve(root_dir, "app/Main-dev.js")
                   ]
         },
         output: {
             publicPath: env.prod ? "" : "/",
             path: outputPath,
-            filename: env.prod ? "[name].[chunkhash].js" : "[name].js",
-            chunkFilename: env.prod ? "[name].[chunkhash].js" : "[name].js",
+            filename: "[name].js",
             pathinfo: !env.prod,
             sourceMapFilename: "[name].js.map"
         },
-        optimization: {
-            splitChunks: {
-                cacheGroups: {
-                    styles: {
-                        name: "styles",
-                        test: /\.css$/,
-                        chunks: "all",
-                        enforce: true
-                    },
-                    vendor: {
-                        name: "vendor",
-                        test: /node_modules/,
-                        chunks: "initial",
-                        enforce: true
-                    }
-                }
-            }
-        },
-        devtool: env.noUgly || !env.prod ? "cheap-module-source-map" : "none",
+        devtool: env.noUgly || !env.prod ? "eval" : "none",
         module: {
             rules: [
                 {
@@ -243,7 +220,8 @@ module.exports = function(env) {
                         path.join(
                             root_dir,
                             "node_modules/react-foundation-apps"
-                        )
+                        ),
+                        path.join(root_dir, "node_modules/react-stockcharts")
                     ],
                     use: [
                         {

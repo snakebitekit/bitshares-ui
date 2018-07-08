@@ -21,13 +21,12 @@ import {
 import {debounce, isNaN} from "lodash-es";
 import classnames from "classnames";
 import {Asset} from "common/MarketClasses";
-import queryString from "query-string";
 
 class Transfer extends React.Component {
     constructor(props) {
         super(props);
         let state = Transfer.getInitialState();
-        let query = queryString.parse(props.location.search) || {};
+        let {query} = this.props.location;
 
         if (query.from) {
             state.from_name = query.from;
@@ -729,15 +728,18 @@ class Transfer extends React.Component {
     }
 }
 
-export default connect(Transfer, {
-    listenTo() {
-        return [AccountStore];
-    },
-    getProps() {
-        return {
-            currentAccount: AccountStore.getState().currentAccount,
-            passwordAccount: AccountStore.getState().passwordAccount,
-            contactsList: AccountStore.getState().accountContacts
-        };
+export default connect(
+    Transfer,
+    {
+        listenTo() {
+            return [AccountStore];
+        },
+        getProps() {
+            return {
+                currentAccount: AccountStore.getState().currentAccount,
+                passwordAccount: AccountStore.getState().passwordAccount,
+                contactsList: AccountStore.getState().accountContacts
+            };
+        }
     }
-});
+);

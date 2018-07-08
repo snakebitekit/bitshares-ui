@@ -45,16 +45,20 @@ class MarketStats extends React.Component {
     }
 
     componentWillMount() {
+        MarketsActions.getMarketStats(this.props.base, this.props.quote);
         this.statsChecked = new Date();
-        // this.statsInterval = MarketsActions.getMarketStatsInterval(
-        //     35 * 1000,
-        //     this.props.base,
-        //     this.props.quote
-        // );
+        this.statsInterval = setInterval(
+            MarketsActions.getMarketStats.bind(
+                this,
+                this.props.base,
+                this.props.quote
+            ),
+            35 * 1000
+        );
     }
 
     componentWillUnmount() {
-        if (this.statsInterval) this.statsInterval();
+        clearInterval(this.statsInterval);
     }
 }
 
@@ -105,15 +109,18 @@ class MarketPrice extends React.Component {
     }
 }
 
-MarketPrice = connect(MarketPrice, {
-    listenTo() {
-        return [MarketsStore];
-    },
-    getProps() {
-        return {
-            allMarketStats: MarketsStore.getState().allMarketStats
-        };
+MarketPrice = connect(
+    MarketPrice,
+    {
+        listenTo() {
+            return [MarketsStore];
+        },
+        getProps() {
+            return {
+                allMarketStats: MarketsStore.getState().allMarketStats
+            };
+        }
     }
-});
+);
 
 export {MarketPrice, MarketStats};

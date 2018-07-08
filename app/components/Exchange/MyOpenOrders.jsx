@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {Link} from "react-router-dom";
+import {Link} from "react-router";
 import counterpart from "counterpart";
 import Ps from "perfect-scrollbar";
 import OpenSettleOrders from "./OpenSettleOrders";
@@ -67,10 +67,7 @@ class TableHeader extends React.Component {
         ) : (
             <thead>
                 <tr>
-                    <th style={leftAlign}>
-                        <Translate content="transaction.order_id" />
-                    </th>
-                    <th style={leftAlign} colSpan="4">
+                    <th style={leftAlign} colSpan="5">
                         <Translate content="exchange.description" />
                     </th>
                     <th style={leftAlign}>
@@ -171,7 +168,7 @@ class OrderRow extends React.Component {
                 <td
                     style={{width: "25%", textAlign: "right"}}
                     className="tooltip"
-                    data-tip={order.expiration.toLocaleString()}
+                    data-tip={new Date(order.expiration)}
                 >
                     {isCall
                         ? null
@@ -198,8 +195,7 @@ class OrderRow extends React.Component {
             </tr>
         ) : (
             <tr key={order.id} className="clickable">
-                <td style={leftAlign}>#{order.id.substring(4)}</td>
-                <td colSpan="4" style={leftAlign} onClick={this.props.onFlip}>
+                <td colSpan="5" style={leftAlign} onClick={this.props.onFlip}>
                     {isBid ? (
                         <Translate
                             content="exchange.buy_description"
@@ -576,14 +572,10 @@ class MyOpenOrders extends React.Component {
             baseIsBitAsset || quoteIsBitAsset ? "inherit" : "none";
 
         return (
-            <div
-                style={{marginBottom: "15px"}}
-                key="open_orders"
-                className={this.props.className}
-            >
+            <div key="open_orders" className={this.props.className}>
                 <div
                     className="exchange-bordered small-12"
-                    style={{height: 266}}
+                    style={{height: 335}}
                 >
                     <div className="grid-block shrink left-orderbook-header">
                         <div

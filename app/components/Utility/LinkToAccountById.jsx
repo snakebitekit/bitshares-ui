@@ -1,5 +1,5 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import ChainTypes from "./ChainTypes";
 import BindToChainState from "./BindToChainState";
 import PropTypes from "prop-types";

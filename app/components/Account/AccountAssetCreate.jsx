@@ -56,9 +56,8 @@ class BitAssetOptions extends React.Component {
                     !asset.getIn(["bitasset", "is_prediction_market"]))
             ) {
                 if (
-                    this.props.isPredictionMarket &&
                     asset.get("precision") !==
-                        parseInt(this.props.assetPrecision, 10)
+                    parseInt(this.props.assetPrecision, 10)
                 ) {
                     this.setState({
                         error: counterpart.translate(
@@ -478,7 +477,7 @@ class AccountAssetCreate extends React.Component {
                 // Enforce uppercase
                 const symbol = target.value.toUpperCase();
                 // Enforce characters
-                let regexp = new RegExp("^[.A-Z0-9]+$");
+                let regexp = new RegExp("^[.A-Z]+$");
                 if (symbol !== "" && !regexp.test(symbol)) {
                     break;
                 }
@@ -1212,9 +1211,6 @@ class AccountAssetCreate extends React.Component {
                                         }
                                         assetPrecision={update.precision}
                                         assetSymbol={update.symbol}
-                                        isPredictionMarket={
-                                            is_prediction_market
-                                        }
                                     />
                                 </Tab>
                             ) : null}

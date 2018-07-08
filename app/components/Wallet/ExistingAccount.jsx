@@ -1,14 +1,9 @@
 import React, {Component} from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import {connect} from "alt-react";
 import WalletManagerStore from "stores/WalletManagerStore";
-import BalanceClaimActive from "./BalanceClaimActive";
+import BalanceClaimActive from "components/Wallet/BalanceClaimActive";
 import Translate from "react-translate-component";
-import {Switch, Route} from "react-router-dom";
-import Brainkey from "./Brainkey";
-import ImportKeys from "./ImportKeys";
-import {BackupRestore} from "./Backup";
-import {getWalletName} from "branding";
 
 const connectObject = {
     listenTo() {
@@ -29,10 +24,7 @@ class ExistingAccount extends Component {
                     <div className="content-block center-content">
                         <div className="page-header">
                             <h1>
-                                <Translate
-                                    content="account.welcome"
-                                    wallet_name={getWalletName()}
-                                />
+                                <Translate content="account.welcome" />
                             </h1>
                             {!has_wallet ? (
                                 <h3>
@@ -45,33 +37,6 @@ class ExistingAccount extends Component {
                             )}
                         </div>
                         <div className="content-block">
-                            <Switch>
-                                <Route
-                                    exact
-                                    path="/existing-account"
-                                    component={BackupRestore}
-                                />
-                                <Route
-                                    exact
-                                    path="/existing-account/import-backup"
-                                    component={ExistingAccountOptions}
-                                />
-                                <Route
-                                    exact
-                                    path="/existing-account/import-keys"
-                                    component={ImportKeys}
-                                />
-                                <Route
-                                    exact
-                                    path="/existing-account/brainkey"
-                                    component={Brainkey}
-                                />
-                                <Route
-                                    exact
-                                    path="/existing-account/balance-claim"
-                                    component={BalanceClaimActive}
-                                />
-                            </Switch>
                             {this.props.children}
                         </div>
                     </div>
@@ -80,7 +45,10 @@ class ExistingAccount extends Component {
         );
     }
 }
-ExistingAccount = connect(ExistingAccount, connectObject);
+ExistingAccount = connect(
+    ExistingAccount,
+    connectObject
+);
 
 class ExistingAccountOptions extends Component {
     render() {
@@ -90,10 +58,7 @@ class ExistingAccountOptions extends Component {
                 {!has_wallet ? (
                     <div>
                         <Link to="existing-account/import-backup">
-                            <Translate
-                                content="wallet.import_backup"
-                                wallet_name={getWalletName()}
-                            />
+                            <Translate content="wallet.import_backup" />
                         </Link>
                         <br />
                         <br />
@@ -133,7 +98,9 @@ class ExistingAccountOptions extends Component {
         );
     }
 }
-ExistingAccountOptions = connect(ExistingAccountOptions, connectObject);
+ExistingAccountOptions = connect(
+    ExistingAccountOptions,
+    connectObject
+);
 
-export default ExistingAccount;
-export {ExistingAccountOptions};
+export {ExistingAccount, ExistingAccountOptions};

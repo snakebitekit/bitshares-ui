@@ -151,8 +151,7 @@ class News extends React.Component {
     componentDidMount() {
         this.updateDimensions();
         window.addEventListener("resize", this.updateDimensions);
-        api
-            .getDiscussionsByBlog(query)
+        api.getDiscussionsByBlog(query)
             .then(discussions => {
                 this.orderDiscussions(discussions);
             })
@@ -173,6 +172,11 @@ class News extends React.Component {
                 <div className="grid-block vertical">
                     <div className="account-tabs">
                         <div className="tab-content">
+                            <div className="hide-selector">
+                                <div className="inline-block">
+                                    <Translate content="news.news" />
+                                </div>
+                            </div>
                             <div className="grid-block vertical">
                                 {isWrong && <SomethingWentWrong />}
                                 {isLoading ? <LoadingIndicator /> : null}

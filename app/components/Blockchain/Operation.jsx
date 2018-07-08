@@ -1,6 +1,6 @@
 import React from "react";
 import FormattedAsset from "../Utility/FormattedAsset";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import classNames from "classnames";
 import Translate from "react-translate-component";
 import counterpart from "counterpart";
@@ -43,6 +43,10 @@ class TransactionLabel extends React.Component {
 }
 
 class Row extends React.Component {
+    static contextTypes = {
+        router: PropTypes.object.isRequired
+    };
+
     static propTypes = {
         dynGlobalObject: ChainTypes.ChainObject.isRequired
     };
@@ -54,7 +58,13 @@ class Row extends React.Component {
 
     constructor(props) {
         super(props);
+        // this.showDetails = this.showDetails.bind(this);
     }
+    //
+    // showDetails(e) {
+    //     e.preventDefault();
+    //     this.context.router.push(`/block/${this.props.block}`);
+    // }
 
     shouldComponentUpdate(nextProps) {
         let {block, dynGlobalObject} = this.props;
@@ -91,7 +101,6 @@ class Row extends React.Component {
             <tr>
                 {this.props.includeOperationId ? (
                     <td style={{textAlign: "left"}}>
-                        {/* {this.props.block}#{this.props.txIndex}<br /> */}
                         {this.props.operationId}
                     </td>
                 ) : null}
@@ -112,9 +121,7 @@ class Row extends React.Component {
                                     )
                                 }
                             )}
-                            to={`/block/${this.props.block}/${
-                                this.props.txIndex
-                            }`}
+                            to={`/block/${this.props.block}`}
                         >
                             <TransactionLabel color={color} type={type} />
                         </Link>
@@ -180,7 +187,7 @@ class Operation extends React.Component {
         return utils.is_object_id(name_or_id) ? (
             <LinkToAccountById account={name_or_id} />
         ) : (
-            <Link to={`/account/${name_or_id}`}>{name_or_id}</Link>
+            <Link to={`/account/${name_or_id}/overview`}>{name_or_id}</Link>
         );
     }
 
@@ -298,12 +305,6 @@ class Operation extends React.Component {
                                 const amount = isBid
                                     ? op[1].min_to_receive
                                     : op[1].amount_to_sell;
-                                let orderId = this.props.result
-                                    ? typeof this.props.result[1] == "string"
-                                        ? "#" +
-                                          this.props.result[1].substring(4)
-                                        : ""
-                                    : "";
 
                                 return (
                                     <TranslateWithLinks
@@ -332,9 +333,6 @@ class Operation extends React.Component {
                                                 arg: "price"
                                             }
                                         ]}
-                                        params={{
-                                            order: orderId
-                                        }}
                                     />
                                 );
                             }}
@@ -1022,9 +1020,6 @@ class Operation extends React.Component {
                                                 arg: "price"
                                             }
                                         ]}
-                                        params={{
-                                            order: o.order_id.substring(4)
-                                        }}
                                     />
                                 );
                             }}
@@ -1306,56 +1301,6 @@ class Operation extends React.Component {
                 );
                 break;
 
-            case "asset_claim_pool":
-                column = (
-                    <TranslateWithLinks
-                        string="operation.asset_claim_pool"
-                        keys={[
-                            {
-                                type: "account",
-                                value: op[1].issuer,
-                                arg: "account"
-                            },
-                            {
-                                type: "asset",
-                                value: op[1].asset_id,
-                                arg: "asset"
-                            },
-                            {
-                                type: "amount",
-                                value: op[1].amount_to_claim,
-                                arg: "amount"
-                            }
-                        ]}
-                    />
-                );
-                break;
-
-            case "asset_update_issuer":
-                column = (
-                    <TranslateWithLinks
-                        string="operation.asset_update_issuer"
-                        keys={[
-                            {
-                                type: "account",
-                                value: op[1].issuer,
-                                arg: "from_account"
-                            },
-                            {
-                                type: "account",
-                                value: op[1].new_issuer,
-                                arg: "to_account"
-                            },
-                            {
-                                type: "asset",
-                                value: op[1].asset_to_update,
-                                arg: "asset"
-                            }
-                        ]}
-                    />
-                );
-                break;
-
             default:
                 console.log("unimplemented op:", op);
                 column = (
@@ -1391,7 +1336,6 @@ class Operation extends React.Component {
         line = column ? (
             <Row
                 operationId={this.props.operationId}
-                txIndex={this.props.txIndex}
                 includeOperationId={this.props.includeOperationId}
                 block={block}
                 type={op[0]}
@@ -1410,15 +1354,18 @@ class Operation extends React.Component {
     }
 }
 
-Operation = connect(Operation, {
-    listenTo() {
-        return [SettingsStore];
-    },
-    getProps() {
-        return {
-            marketDirections: SettingsStore.getState().marketDirections
-        };
+Operation = connect(
+    Operation,
+    {
+        listenTo() {
+            return [SettingsStore];
+        },
+        getProps() {
+            return {
+                marketDirections: SettingsStore.getState().marketDirections
+            };
+        }
     }
-});
+);
 
 export default Operation;

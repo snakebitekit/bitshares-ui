@@ -179,11 +179,11 @@ class PasswordInput extends Component {
                                     ? 0
                                     : null
                             }}
-                            id="current-password"
+                            id="password"
                             name="password"
                             type="password"
                             ref="password"
-                            autoComplete="current-password"
+                            autoComplete="off"
                             onChange={this.handleChange}
                             onKeyDown={this.onKeyDown}
                         />
@@ -220,7 +220,7 @@ class PasswordInput extends Component {
                                 name="confirm_password"
                                 type="password"
                                 ref="confirm_password"
-                                autoComplete="confirm-password"
+                                autoComplete="off"
                                 onChange={this.handleChange}
                             />
                             {confirmMatch ? (

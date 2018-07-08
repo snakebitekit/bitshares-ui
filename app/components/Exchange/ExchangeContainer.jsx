@@ -16,7 +16,7 @@ import Page404 from "../Page404/Page404";
 
 class ExchangeContainer extends React.Component {
     render() {
-        let symbols = this.props.match.params.marketID.toUpperCase().split("_");
+        let symbols = this.props.params.marketID.toUpperCase().split("_");
         if (symbols[0] === symbols[1]) {
             return <Page404 subtitle="market_not_found_subtitle" />;
         }
@@ -51,6 +51,12 @@ class ExchangeContainer extends React.Component {
                     },
                     totals: () => {
                         return MarketsStore.getState().totals;
+                    },
+                    priceData: () => {
+                        return MarketsStore.getState().priceData;
+                    },
+                    volumeData: () => {
+                        return MarketsStore.getState().volumeData;
                     },
                     activeMarketHistory: () => {
                         return MarketsStore.getState().activeMarketHistory;
@@ -109,20 +115,11 @@ class ExchangeContainer extends React.Component {
                             true
                         );
                     },
-
-                    dataFeed: () => new DataFeed(),
-
-                    trackedGroupsConfig: () => {
-                        return MarketsStore.getState().trackedGroupsConfig;
-                    },
-                    currentGroupOrderLimit: () => {
-                        return MarketsStore.getState().currentGroupLimit;
-                    }
+                    dataFeed: () => new DataFeed()
                 }}
             >
                 <ExchangeSubscriber
-                    history={this.props.history}
-                    location={this.props.location}
+                    router={this.props.router}
                     quoteAsset={symbols[0]}
                     baseAsset={symbols[1]}
                 />
@@ -151,7 +148,7 @@ class ExchangeSubscriber extends React.Component {
         coreAsset: "1.3.0"
     };
 
-    constructor(props) {
+    constructor() {
         super();
         this.state = {sub: null};
 
@@ -222,7 +219,7 @@ class ExchangeSubscriber extends React.Component {
             nextProps.baseAsset &&
             nextProps.baseAsset.getIn(["bitasset", "is_prediction_market"])
         ) {
-            this.props.history.push(
+            this.props.router.push(
                 `/market/${nextProps.baseAsset.get(
                     "symbol"
                 )}_${nextProps.quoteAsset.get("symbol")}`
@@ -269,20 +266,16 @@ class ExchangeSubscriber extends React.Component {
         }
     }
 
-    _subToMarket(props, newBucketSize, newGroupLimit) {
-        let {quoteAsset, baseAsset, bucketSize, currentGroupOrderLimit} = props;
+    _subToMarket(props, newBucketSize) {
+        let {quoteAsset, baseAsset, bucketSize} = props;
         if (newBucketSize) {
             bucketSize = newBucketSize;
-        }
-        if (newGroupLimit) {
-            currentGroupOrderLimit = newGroupLimit;
         }
         if (quoteAsset.get("id") && baseAsset.get("id")) {
             MarketsActions.subscribeMarket.defer(
                 baseAsset,
                 quoteAsset,
-                bucketSize,
-                currentGroupOrderLimit
+                bucketSize
             );
             this.setState({
                 sub: `${quoteAsset.get("id")}_${baseAsset.get("id")}`

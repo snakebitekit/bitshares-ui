@@ -5,10 +5,7 @@ import Block from "./Block";
 
 class BlockContainer extends React.Component {
     render() {
-        let height = parseInt(this.props.match.params.height, 10);
-        let txIndex = this.props.match.params.txIndex
-            ? parseInt(this.props.match.params.txIndex)
-            : 0;
+        let height = parseInt(this.props.params.height, 10);
 
         return (
             <AltContainer
@@ -19,11 +16,7 @@ class BlockContainer extends React.Component {
                     }
                 }}
             >
-                <Block
-                    {...this.props}
-                    height={height}
-                    scrollToIndex={txIndex}
-                />
+                <Block {...this.props} height={height} />
             </AltContainer>
         );
     }

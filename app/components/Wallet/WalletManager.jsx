@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Link} from "react-router-dom";
+import {Link} from "react-router/es";
 import {connect} from "alt-react";
 import WalletActions from "actions/WalletActions";
 import BackupActions from "actions/BackupActions";
@@ -7,14 +7,6 @@ import WalletManagerStore from "stores/WalletManagerStore";
 import Translate from "react-translate-component";
 import cname from "classnames";
 import counterpart from "counterpart";
-import {Switch, Route} from "react-router-dom";
-import {ExistingAccountOptions} from "./ExistingAccount";
-import ImportKeys from "./ImportKeys";
-import BalanceClaimActive from "./BalanceClaimActive";
-import WalletChangePassword from "./WalletChangePassword";
-import {WalletCreate} from "./WalletCreate";
-import {BackupCreate, BackupRestore} from "./Backup";
-import BackupBrainkey from "./BackupBrainkey";
 
 const connectObject = {
     listenTo() {
@@ -74,63 +66,7 @@ class WalletManager extends Component {
                             />
                         </div>
                         <div className="content-block">
-                            <Switch>
-                                <Route
-                                    exact
-                                    path="/wallet"
-                                    component={WalletOptions}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/change"
-                                    component={ChangeActiveWallet}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/change-password"
-                                    component={WalletChangePassword}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/import-keys"
-                                    component={ImportKeys}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/brainkey"
-                                    component={ExistingAccountOptions}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/create"
-                                    component={WalletCreate}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/delete"
-                                    component={WalletDelete}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/backup/restore"
-                                    component={BackupRestore}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/backup/create"
-                                    component={BackupCreate}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/backup/brainkey"
-                                    component={BackupBrainkey}
-                                />
-                                <Route
-                                    exact
-                                    path="/wallet/balance-claims"
-                                    component={BalanceClaimActive}
-                                />
-                            </Switch>
+                            {this.props.children}
                         </div>
                     </div>
                 </div>
@@ -138,7 +74,10 @@ class WalletManager extends Component {
         );
     }
 }
-WalletManager = connect(WalletManager, connectObject);
+WalletManager = connect(
+    WalletManager,
+    connectObject
+);
 
 class WalletOptions extends Component {
     render() {
@@ -199,7 +138,7 @@ class WalletOptions extends Component {
                                         Dummy
                                     </div>
                                     <br />
-                                    <Link to="/wallet/balance-claims">
+                                    <Link to="wallet/balance-claims">
                                         <div className="button outline success">
                                             <Translate content="wallet.balance_claim_lookup" />
                                         </div>
@@ -217,7 +156,7 @@ class WalletOptions extends Component {
                 </div>
 
                 {has_wallet ? (
-                    <Link to="/wallet/backup/create">
+                    <Link to="wallet/backup/create">
                         <div className="button outline success">
                             <Translate content="wallet.create_backup" />
                         </div>
@@ -225,14 +164,14 @@ class WalletOptions extends Component {
                 ) : null}
 
                 {has_wallet ? (
-                    <Link to="/wallet/backup/brainkey">
+                    <Link to="wallet/backup/brainkey">
                         <div className="button outline success">
                             <Translate content="wallet.backup_brainkey" />
                         </div>
                     </Link>
                 ) : null}
 
-                <Link to="/wallet/backup/restore">
+                <Link to="wallet/backup/restore">
                     <div className="button outline success">
                         <Translate content="wallet.restore_backup" />
                     </div>
@@ -242,14 +181,14 @@ class WalletOptions extends Component {
 
                 {has_wallet ? <br /> : null}
 
-                <Link to="/wallet/create">
+                <Link to="wallet/create">
                     <div className="button outline success">
                         <Translate content="wallet.new_wallet" />
                     </div>
                 </Link>
 
                 {has_wallet ? (
-                    <Link to="/wallet/delete">
+                    <Link to="wallet/delete">
                         <div className="button outline success">
                             <Translate content="wallet.delete_wallet" />
                         </div>
@@ -257,7 +196,7 @@ class WalletOptions extends Component {
                 ) : null}
 
                 {has_wallet ? (
-                    <Link to="/wallet/change-password">
+                    <Link to="wallet/change-password">
                         <div className="button outline success">
                             <Translate content="wallet.change_password" />
                         </div>
@@ -267,7 +206,10 @@ class WalletOptions extends Component {
         );
     }
 }
-WalletOptions = connect(WalletOptions, connectObject);
+WalletOptions = connect(
+    WalletOptions,
+    connectObject
+);
 
 class ChangeActiveWallet extends Component {
     constructor() {
@@ -333,7 +275,7 @@ class ChangeActiveWallet extends Component {
                     </ul>
                 </section>
 
-                <Link to="/wallet/create">
+                <Link to="wallet/create">
                     <div className="button outline">
                         <Translate content="wallet.new_wallet" />
                     </div>
@@ -369,7 +311,10 @@ class ChangeActiveWallet extends Component {
         this.setState({current_wallet});
     }
 }
-ChangeActiveWallet = connect(ChangeActiveWallet, connectObject);
+ChangeActiveWallet = connect(
+    ChangeActiveWallet,
+    connectObject
+);
 
 class WalletDelete extends Component {
     constructor() {
@@ -501,7 +446,9 @@ class WalletDelete extends Component {
         this.setState({selected_wallet});
     }
 }
-WalletDelete = connect(WalletDelete, connectObject);
+WalletDelete = connect(
+    WalletDelete,
+    connectObject
+);
 
-export default WalletManager;
-export {WalletOptions, ChangeActiveWallet, WalletDelete};
+export {WalletManager, WalletOptions, ChangeActiveWallet, WalletDelete};

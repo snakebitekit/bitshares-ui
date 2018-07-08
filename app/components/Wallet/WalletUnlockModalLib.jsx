@@ -1,7 +1,6 @@
 import React from "react";
 import Translate from "react-translate-component";
 import counterpart from "counterpart";
-import {getWalletName} from "branding";
 
 /* Dummy input to trick Chrome into disabling auto-complete */
 export const DisableChromeAutocomplete = () => (
@@ -42,7 +41,6 @@ export class StyledUpload extends React.Component {
                     onClick={stopPropagation}
                     onChange={this.props.onFileChosen}
                     ref="input"
-                    accept=".bin"
                 />
             </label>
         );
@@ -94,9 +92,7 @@ export const LoginButtons = ({onLogin, backupLogin}) => (
         className="button"
         data-place="bottom"
         data-html
-        data-tip={counterpart.translate("tooltip.login", {
-            wallet_name: getWalletName()
-        })}
+        data-tip={counterpart.translate("tooltip.login")}
         onClick={onLogin}
     >
         <Translate
@@ -118,7 +114,6 @@ export class CustomPasswordInput extends React.Component {
                 name="password"
                 id="password"
                 type="password"
-                autoComplete="current-password"
             />
         </div>
     );

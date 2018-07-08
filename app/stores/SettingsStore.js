@@ -6,13 +6,6 @@ import {merge} from "lodash-es";
 import ls from "common/localStorage";
 import {Apis} from "bitsharesjs-ws";
 import {settingsAPIs} from "api/apiConfig";
-import {
-    getDefaultTheme,
-    getDefaultLogin,
-    getMyMarketsBases,
-    getMyMarketsQuotes,
-    getUnits
-} from "branding";
 
 const CORE_ASSET = "BTS"; // Setting this to BTS to prevent loading issues when used with BTS chain which is the most usual case currently
 
@@ -60,8 +53,8 @@ class SettingsStore {
             showSettles: false,
             showAssetPercent: false,
             walletLockTimeout: 60 * 10,
-            themes: getDefaultTheme(),
-            passwordLogin: getDefaultLogin() == "password",
+            themes: "darkTheme",
+            passwordLogin: true,
             browser_notifications: {
                 allow: true,
                 additional: {
@@ -88,7 +81,7 @@ class SettingsStore {
                 "ja"
             ],
             apiServer: apiServer,
-            unit: getUnits(),
+            unit: [CORE_ASSET, "USD", "CNY", "BTC", "EUR", "GBP"],
             showSettles: [{translate: "yes"}, {translate: "no"}],
             showAssetPercent: [{translate: "yes"}, {translate: "no"}],
             themes: ["darkTheme", "lightTheme", "midnightTheme"],
@@ -185,7 +178,76 @@ class SettingsStore {
             this.marketsKey = this._getChainKey("userMarkets");
             // Default markets setup
             let topMarkets = {
-                markets_4018d784: getMyMarketsQuotes(),
+                markets_4018d784: [
+                    // BTS MAIN NET
+                    "OPEN.MKR",
+                    "BTS",
+                    "OPEN.ETH",
+                    "ICOO",
+                    "BTC",
+                    "OPEN.LISK",
+                    "BKT",
+                    "OPEN.STEEM",
+                    "OPEN.GAME",
+                    "OCT",
+                    "USD",
+                    "CNY",
+                    "BTSR",
+                    "OBITS",
+                    "OPEN.DGD",
+                    "EUR",
+                    "GOLD",
+                    "SILVER",
+                    "IOU.CNY",
+                    "OPEN.DASH",
+                    "OPEN.USDT",
+                    "OPEN.EURT",
+                    "OPEN.BTC",
+                    "CADASTRAL",
+                    "BLOCKPAY",
+                    "BTWTY",
+                    "OPEN.INCNT",
+                    "KAPITAL",
+                    "OPEN.MAID",
+                    "OPEN.SBD",
+                    "OPEN.GRC",
+                    "YOYOW",
+                    "HERO",
+                    "RUBLE",
+                    "SMOKE",
+                    "STEALTH",
+                    "BRIDGE.BCO",
+                    "BRIDGE.BTC",
+                    "KEXCOIN",
+                    "PPY",
+                    "OPEN.EOS",
+                    "OPEN.OMG",
+                    "CVCOIN",
+                    "BRIDGE.ZNY",
+                    "BRIDGE.MONA",
+                    "OPEN.LTC",
+                    "GDEX.BTC",
+                    "GDEX.EOS",
+                    "GDEX.ETH",
+                    "GDEX.BTO",
+                    "WIN.ETH",
+                    "WIN.ETC",
+                    "WIN.HSR",
+                    "RUDEX.STEEM",
+                    "RUDEX.SBD",
+                    "RUDEX.KRM",
+                    "RUDEX.GBG",
+                    "RUDEX.GOLOS",
+                    "RUDEX.MUSE",
+                    "RUDEX.DCT",
+                    "OPEN.DOGE",
+                    "OPEN.KRM",
+                    "OPEN.TUSD",
+                    "OPEN.ZEC",
+                    "OPEN.WAVES",
+                    "OPEN.ZRX",
+                    "OPEN.NEO"
+                ],
                 markets_39f5e2ed: [
                     // TESTNET
                     "PEG.FAKEUSD",
@@ -194,7 +256,14 @@ class SettingsStore {
             };
 
             let bases = {
-                markets_4018d784: getMyMarketsBases(),
+                markets_4018d784: [
+                    // BTS MAIN NET
+                    "USD",
+                    "OPEN.BTC",
+                    "CNY",
+                    "BTS",
+                    "BTC"
+                ],
                 markets_39f5e2ed: [
                     // TESTNET
                     "TEST"
