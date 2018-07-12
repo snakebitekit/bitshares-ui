@@ -71,7 +71,7 @@ module.exports = function(env) {
         new HtmlWebpackPlugin({
             template: "!!handlebars-loader!app/assets/index.hbs",
             templateParameters: {
-                title: "BitShares " + __VERSION__,
+                title: "Citadel " + __VERSION__,
                 INCLUDE_BASE: !!env.prod && !env.hash,
                 PRODUCTION: !!env.prod,
                 ELECTRON: !!env.electron
@@ -83,7 +83,7 @@ module.exports = function(env) {
             __HASH_HISTORY__: !!env.hash,
             __BASE_URL__: JSON.stringify(baseUrl),
             __UI_API__: JSON.stringify(
-                env.apiUrl || "https://ui.bitshares.eu/api"
+                env.apiUrl || "https://citadel.li/apidocs/"
             ),
             __TESTNET__: !!env.testnet,
             __DEPRECATED__: !!env.deprecated,

@@ -37,8 +37,10 @@ export default class TradingViewPriceChart extends React.Component {
             symbol: props.quoteSymbol + "_" + props.baseSymbol,
             interval: getResolutionsFromBuckets([props.bucketSize])[0],
             library_path: `${
-                __ELECTRON__ ? __BASE_URL__ : ""
-            }/charting_library/`,
+                __ELECTRON__ || process.env.NODE_ENV === "development"
+                    ? __BASE_URL__
+                    : ""
+            }charting_library/`,
             datafeed: dataFeed,
             container_id: "tv_chart",
             charts_storage_url: "http://saveload.tradingview.com",
